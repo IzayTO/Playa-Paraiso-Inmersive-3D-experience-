@@ -1,0 +1,143 @@
+PARAÍSO · RESORT EXPLORER — Versión 1.0
+
+CÓMO PROBARLO
+
+1. Descomprime el ZIP.
+2. Sube TODO el contenido al repositorio o a tu servidor, conservando las carpetas.
+   index.html debe quedar en la raíz, junto a styles.css y las carpetas js, data y vendor.
+3. En GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root) > Save.
+4. Abre la dirección publicada con Safari o Chrome. No abras el HTML directamente
+   desde la app Archivos: necesita un servidor HTTP/HTTPS para sus módulos y JSON.
+
+No necesitas instalar Node, npm ni compilar nada. Las bibliotecas y la fuente están
+incluidas; el sitio publicado no depende de un CDN.
+
+TU MAQUETA YA VIENE INCLUIDA
+
+El sitio abre tu resort.json del 19 de septiembre de 2026: 58 objetos.
+Se quitaron la imagen de referencia y las preferencias del editor de la copia que
+se incluye en data/resort.json. Se conservan las posiciones, escalas, rotaciones
+XYZ, reflejos de los ejes y opacidades. El archivo original entregado no se modificó.
+
+Tu archivo todavía tiene vacíos places y routeNetwork. Por eso no ofrece destinos
+ni permite entrar en primera persona. Usa «Probar una maqueta con rutas» para
+comprobar esas funciones. «Volver a mi maqueta» restaura tu archivo.
+
+Para probar una exportación nueva, toca «Cargar maqueta» y elige tu nuevo JSON.
+La importación se hace en el navegador y no envía el archivo a un servidor.
+El archivo seleccionado dura en esa sesión. Para cambiar el que abre siempre,
+reemplaza data/resort.json en el repositorio y publica esa actualización.
+
+CONTROLES
+
+Vista aérea en móvil: un dedo gira; dos dedos desplazan; pellizcar acerca o aleja.
+Vista aérea en PC: arrastrar gira, botón derecho desplaza, rueda acerca o aleja.
+La diana centra. El botón de capas ofrece vista aérea, superior, frontal y de la ruta.
+
+Rutas: abre «Tu próximo destino», selecciona Desde y Hacia y pulsa «Mostrar ruta».
+En móvil el panel se pliega para ver el camino; «Recorrer» abre la primera persona.
+En PC usa «Recorrer en primera persona» dentro del resultado.
+
+Primera persona: W / flecha arriba avanza; S / flecha abajo retrocede;
+A / D o flechas izquierda/derecha giran la mirada. Arrastrar permite mirar en 360°.
+El joystick móvil avanza/retrocede verticalmente y gira horizontalmente.
+La posición siempre permanece sobre el camino. Puedes ir y volver tras llegar.
+El control de altura adapta la mirada a la escala de la maqueta.
+«Salir del recorrido» o Escape regresa a la vista aérea.
+
+SOL Y CIELO
+
+El botón del sol abre «Luz y ambiente».
+«Sol y sombras» prepara las sombras antes de comenzar. Puedes cancelar la preparación.
+Después, la secuencia se reutiliza al mover la cámara o al caminar. La primera
+preparación puede tardar más según la cantidad de objetos y el dispositivo.
+«Cielo azul» es independiente: añade el cielo y el horizonte claro en 360 grados.
+La trayectoria puede ser diagonal o por un lado del plano, sin dibujar una línea solar.
+La duración es de 5 a 60 minutos, en pasos de 5, por trayecto. Ida + regreso duran el doble.
+El sol va y vuelve. El deslizador lo pausa en la posición escogida; Reproducir lo reanuda.
+Cambiar la trayectoria vuelve a preparar las sombras. Desactivar y reactivar la misma
+trayectoria reutiliza la caché. Cambiar de maqueta descarta el cálculo anterior.
+
+Es una simulación visual: iluminación direccional y sombras precalculadas e
+interpoladas, no ray tracing físico. Hay 49 posiciones de sombra, filtradas para
+suavizar los bordes. Las transparencias proyectan una sombra aproximada. No se
+simulan reflexiones, refracciones ni rebotes completos de luz.
+
+La geometría se dibuja cuando cambia la vista o la iluminación; los mapas de sombra
+NO se vuelven a renderizar en cada fotograma. La aplicación pausa su actualización
+al quedar en segundo plano. La secuencia móvil ocupa aproximadamente 49 MiB de
+texturas, además de la geometría y los recursos normales del navegador.
+
+CÓMO SE ELIGE UNA RUTA
+
+Rápida: camino conectado de menor distancia.
+Estándar: favorece las conexiones que pertenecen a rutas guardadas con nombre.
+Con sombra: equilibra longitud y protección frente al sol en su posición seleccionada.
+Compara la geometría por encima y en dirección al sol; también acepta covered/shade
+en el JSON. Esas propiedades adicionales son opcionales. Una cubierta puede
+detectarse aunque el diseñador no exporte esa etiqueta.
+
+La ruta no cambia sola mientras caminas. Para volver a comparar tras mover el sol,
+sal de primera persona y pulsa «Mostrar ruta» de nuevo.
+Los lugares usan routeNodeId si existe; en caso contrario se usa el nodo más cercano
+como acceso. La navegación empieza y termina en los accesos de la red, sin inventar
+caminos fuera de ella. Si no hay lugares, se ofrecen los nodos conectados.
+No hay reconocimiento automático de caminos dibujados: necesitas guardar la red
+de rutas en el diseñador. Las piezas visuales de tipo path no sustituyen esa red.
+
+Las distancias siguen las unidades del JSON y el tiempo es una estimación a pie.
+Una maqueta que no está calibrada a metros reales no ofrece distancias reales.
+
+COMPATIBILIDAD Y VALIDACIÓN
+
+Se reutiliza la biblioteca original de props de IzayTO/Map-desing, conservando sus
+geometrías y escaleras paramétricas. No se reemplaza un prop desconocido por un cubo:
+la importación avisa y conserva la maqueta anterior.
+Formatos admitidos: resort-map-builder, versiones 1 a 6. Máximo: JSON de 40 MB,
+10 000 objetos, 10 000 nodos y 30 000 conexiones. El rendimiento depende del equipo.
+
+Comprobado: los 58 objetos reales, transforms y opacidades, el catálogo completo,
+rutas estándar/rápidas/cubiertas, regreso y límites del camino, dirección relativa
+a la mirada, duración y retorno del sol, detección de cubiertas y archivos inválidos.
+Se revisaron los controles en escritorio y en un marco móvil de 390 × 844.
+Los shaders de material, cielo y profundidad compilaron y enlazaron con Mesa/EGL.
+
+LIMITACIÓN DE LA REVISIÓN: el navegador de pruebas tenía WebGL desactivado.
+La revisión de interfaz usó un sustituto del renderizador exclusivamente de prueba;
+ese sustituto NO se incluye aquí. No se pudo probar el renderizado WebGL completo
+en Safari/iPhone real, ni medir su fluidez. La prueba en tu dispositivo sigue pendiente.
+
+ARCHIVOS
+
+index.html              Interfaz y punto de entrada.
+styles.css              Diseño y adaptación a móvil.
+js/app.js               Conexión de controles y estados.
+js/viewer.js            Geometría, cámara y plano sin cuadrícula.
+js/renderer.js          Inicio de WebGL.
+js/lighting.js          Sol, cielo y caché de sombras.
+js/data.js              Lectura y validación de exportaciones.
+js/props.js             Geometría original del constructor.
+js/routing.js           Búsqueda de caminos.
+js/shade.js             Análisis de sombra de los caminos.
+js/route-visual.js      Dibujo progresivo de la ruta y flechas.
+js/walk.js              Recorrido en primera persona.
+js/math.js, js/icons.js Utilidades de cálculo e iconos.
+data/resort.json        Tu maqueta inicial, sin imagen de referencia.
+data/demo.json          Ejemplo separado con caminos y cubiertas.
+vendor/                 Three.js 0.160.1, OrbitControls y fuente Outfit.
+
+REFERENCIAS
+
+Diseño inspirado en las referencias que compartiste:
+https://www.iberostar.com/mx/
+https://www.iberostar.com/mx/agentes-de-viajes/
+
+Constructor de origen:
+https://github.com/IzayTO/Map-desing
+Commit consultado: 0932beb6bb0880b509f2d0652a527022b8b22235
+
+Prototipo independiente. No es un sitio oficial de Iberostar ni de Universal.
+Las licencias de Three.js y Outfit se incluyen en vendor.
+
+Guía oficial de publicación en GitHub Pages:
+https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site

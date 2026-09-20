@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#003c51">
+  <meta name="description" content="Explora tu maqueta de Playa Paraíso en 3D, descubre sus rutas y recórrela bajo la luz del sol.">
+  <title>Paraíso · Resort Explorer</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23003c51'/%3E%3Cpath d='m16 4 3 8 9 1-7 6 2 9-7-5-7 5 2-9-7-6 9-1z' fill='%239ae2df'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Paraíso, inicio"><span class="brand-mark" aria-hidden="true">✳</span><span><strong>PARAÍSO</strong><small>RESORT EXPLORER</small></span></a>
+    <div class="top-center"><span>PLAYA PARAÍSO</span><span class="top-divider"></span><span>Una nueva perspectiva</span></div>
+    <button id="importButton" class="button import-button"><i data-icon="upload"></i><span>Cargar maqueta</span></button>
+    <input id="fileInput" type="file" accept=".json,application/json" hidden>
+  </header>
+
+  <main id="workspace" class="workspace">
+    <div id="scene" class="scene" aria-label="Maqueta tridimensional. Arrastra para girar, pellizca para acercar." tabindex="0"></div>
+    <div class="scene-caption"><span class="eyebrow" id="sceneLabel">TU MAQUETA</span><h1 id="modelTitle">Playa Paraíso</h1><p id="modelSubtitle">Una vista para explorar, un camino por descubrir.</p></div>
+
+    <aside id="routePanel" class="route-panel panel" aria-label="Planificar recorrido">
+      <button id="panelToggle" class="panel-toggle" aria-expanded="true" aria-controls="routePanelBody"><span class="handle"></span><span class="panel-heading">Tu próximo destino</span><i data-icon="chevron-down"></i></button>
+      <div id="routePanelBody" class="route-panel-body">
+        <p class="eyebrow panel-eyebrow">EXPLORA A TU RITMO</p>
+        <h2>¿A dónde vamos?</h2>
+        <form id="routeForm">
+          <div class="destinations">
+            <label class="destination"><span class="destination-icon start-dot"></span><span class="field-content"><span>Desde</span><select id="fromSelect" required aria-label="Punto de partida"><option value="">Punto de partida</option></select></span></label>
+            <button id="swapPlaces" class="swap-button" type="button" title="Intercambiar origen y destino" aria-label="Intercambiar origen y destino"><i data-icon="swap"></i></button>
+            <label class="destination"><i data-icon="pin" class="destination-icon"></i><span class="field-content"><span>Hacia</span><select id="toSelect" required aria-label="Destino"><option value="">Elige tu destino</option></select></span></label>
+          </div>
+          <fieldset class="route-modes"><legend>Cómo quieres llegar</legend><div class="mode-options">
+            <label><input type="radio" name="routeMode" value="standard" checked><span><i data-icon="route"></i>Estándar</span></label>
+            <label><input type="radio" name="routeMode" value="fast"><span><i data-icon="bolt"></i>Rápida</span></label>
+            <label><input type="radio" name="routeMode" value="shade"><span><i data-icon="shade"></i>Con sombra</span></label>
+          </div></fieldset>
+          <button id="showRoute" class="button primary" type="submit"><span>Mostrar ruta</span><i data-icon="arrow-right"></i></button>
+        </form>
+        <div id="emptyRoutes" class="empty-routes" hidden><i data-icon="route"></i><p>Esta maqueta aún no tiene rutas.<span>Guárdalas en el diseñador y vuelve a cargar el archivo.</span></p></div>
+        <div id="routeResult" class="route-result" hidden><div><span id="routeName" class="route-name"></span><button id="clearRoute" class="text-button" title="Quitar ruta">Quitar</button></div><div class="route-stats"><strong id="routeDistance"></strong><span id="routeTime"></span><span id="routeShade"></span></div><p id="routeNote"></p><button id="walkButton" class="button walk-button"><i data-icon="walk"></i>Recorrer en primera persona<i data-icon="arrow-right"></i></button></div>
+        <button id="demoButton" class="demo-button"><span>Probar una maqueta con rutas</span><i data-icon="arrow-up-right"></i></button>
+      </div>
+      <div class="panel-footer"><i data-icon="cube"></i><span id="modelInfo">Preparando tu maqueta…</span><button id="mobileWalkButton" class="mobile-walk" hidden><i data-icon="walk"></i>Recorrer</button></div>
+    </aside>
+
+    <div class="view-tools" aria-label="Controles de vista">
+      <button id="centerButton" class="icon-button" aria-label="Centrar vista" title="Centrar vista"><i data-icon="focus"></i></button>
+      <button id="viewButton" class="icon-button" aria-label="Cambiar vista" title="Cambiar vista"><i data-icon="layers"></i></button>
+      <button id="zoomIn" class="icon-button" aria-label="Acercar" title="Acercar"><i data-icon="plus"></i></button>
+      <button id="zoomOut" class="icon-button" aria-label="Alejar" title="Alejar"><i data-icon="minus"></i></button>
+      <button id="helpButton" class="icon-button" aria-label="Ayuda" title="Controles y ayuda"><i data-icon="info"></i></button>
+    </div>
+    <div id="viewMenu" class="view-menu panel" hidden><p class="eyebrow">PUNTO DE VISTA</p><button data-view="aerial">Vista aérea inclinada</button><button data-view="top">Desde arriba</button><button data-view="front">Desde el frente</button><button data-view="route" id="fitRouteButton" disabled>Centrar en la ruta</button></div>
+    <div class="compass" aria-label="Orientación de la cámara"><span>N</span><div id="compassNeedle"><i></i><b></b></div></div>
+
+    <section id="lightPanel" class="light-panel panel" aria-label="Luz y ambiente">
+      <button id="lightToggle" class="light-heading" aria-label="Luz y ambiente" aria-expanded="false" aria-controls="lightBody"><span class="sun-icon"><i data-icon="sun"></i></span><span><strong>Luz y ambiente</strong><small id="lightSummary">Maqueta blanca</small></span><i data-icon="chevron-up"></i></button>
+      <div id="lightBody" class="light-body" hidden>
+        <div class="switch-row"><span><strong>Sol y sombras</strong><small>La luz recorre tu maqueta</small></span><label class="switch"><input id="sunEnabled" type="checkbox" aria-label="Activar sol y sombras"><span></span></label></div>
+        <div class="switch-row"><span><strong>Cielo azul</strong><small>Un horizonte abierto, en 360°</small></span><label class="switch"><input id="skyEnabled" type="checkbox" aria-label="Activar cielo azul"><span></span></label></div>
+        <div id="sunControls" class="sun-controls" hidden>
+          <label class="select-label">Trayectoria<select id="sunPath"><option value="diagonal">De esquina a esquina · diagonal</option><option value="side">De esquina a esquina · un lado</option></select></label>
+          <div class="time-row"><label for="sunDuration">Duración por trayecto</label><select id="sunDuration"><option value="5">5 min</option><option value="10" selected>10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="25">25 min</option><option value="30">30 min</option><option value="35">35 min</option><option value="40">40 min</option><option value="45">45 min</option><option value="50">50 min</option><option value="55">55 min</option><option value="60">60 min</option></select></div>
+          <div class="sun-timeline"><span id="sunPhase">Mediodía</span><button id="sunPlay" class="text-button" aria-label="Pausar movimiento del sol">Pausar</button></div>
+          <input id="sunPosition" class="range" type="range" min="0" max="1000" value="500" aria-label="Posición del sol">
+          <div class="range-labels"><span>Amanecer</span><span>Atardecer</span></div>
+          <p class="micro-copy">Va y vuelve. Desliza para detenerlo donde quieras.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="orbitHint" class="orbit-hint"><i data-icon="hand"></i><span>Arrastra para girar · Pellizca para acercar</span></div>
+    <div id="walkHUD" class="walk-hud" hidden>
+      <button id="exitWalk" class="button exit-walk"><i data-icon="arrow-left"></i><span>Salir del recorrido</span></button>
+      <div class="direction-card"><i id="directionArrow" data-icon="arrow-up"></i><div><small id="walkDestination">HACIA TU DESTINO</small><strong id="directionText">Continúa de frente</strong><span id="walkRemaining"></span></div></div>
+      <div class="walk-progress"><input id="walkPosition" class="range" type="range" min="0" max="1000" value="0" aria-label="Posición en el recorrido"><div><span id="walkFrom"></span><span id="walkTo"></span></div></div>
+      <div id="joystick" class="joystick" aria-label="Joystick: arriba para avanzar, abajo para retroceder" role="group"><span class="joy-up">▲</span><span class="joy-down">▼</span><div id="joystickThumb"></div></div>
+      <div class="walk-hint">W / ↑ avanzar · S / ↓ volver<br>A / D girar · Arrastra para mirar</div>
+      <button id="walkSettingsButton" class="icon-button walk-settings-button" aria-label="Ajustar altura de la mirada"><i data-icon="sliders"></i></button>
+      <div id="walkSettings" class="walk-settings panel" hidden><label for="eyeHeight">Altura de la mirada <output id="eyeValue"></output></label><input id="eyeHeight" type="range" class="range" min="0.1" max="2.5" step="0.01" value="0.35"><p>En la escala de esta maqueta.</p></div>
+    </div>
+
+    <div id="loading" class="loading-layer" role="status" aria-live="polite"><div class="loading-card"><span class="loading-symbol">✳</span><p class="eyebrow">PREPARANDO TU EXPERIENCIA</p><h2 id="loadingTitle">Un momento en Paraíso</h2><p id="loadingDetail">Cargando la maqueta…</p><progress id="loadingProgress" max="1" value="0"></progress><button id="cancelBake" class="text-button" hidden>Volver a la vista blanca</button></div></div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </main>
+  <dialog id="helpDialog"><button id="closeHelp" class="icon-button close-dialog" aria-label="Cerrar ayuda"><i data-icon="close"></i></button><p class="eyebrow">HAZLO A TU RITMO</p><h2>Explora Paraíso</h2><div class="help-grid"><article><i data-icon="hand"></i><h3>La maqueta, en tus manos</h3><p>Un dedo gira la vista. Dos dedos desplazan y pellizcan para acercar. En computadora: arrastra para girar, usa el botón derecho para desplazar y la rueda para acercar.</p></article><article><i data-icon="sun"></i><h3>Encuentra tu luz</h3><p>Activa el sol para preparar sus sombras. Después puedes reproducir su recorrido, cambiar su duración o fijar una posición. El cielo azul se activa por separado.</p></article><article><i data-icon="walk"></i><h3>Un camino a tu medida</h3><p>Elige una ruta para entrar en primera persona. Avanza o vuelve por el mismo camino con W y S, las flechas o el joystick. Arrastra la vista para mirar en cualquier dirección.</p></article><article><i data-icon="upload"></i><h3>Tu propia maqueta</h3><p>Carga el JSON de Wizard Map Design. Se conservan los objetos, su geometría y las rutas. La imagen de referencia, la cuadrícula y las herramientas del editor no se muestran.</p></article></div><p class="help-note">Prototipo independiente inspirado en Iberostar. Las distancias siguen las unidades del archivo; la luz y las sombras son una simulación visual.</p></dialog>
+  <noscript>Activa JavaScript para abrir el visor tridimensional.</noscript>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
