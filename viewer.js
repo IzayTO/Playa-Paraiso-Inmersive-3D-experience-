@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import {OrbitControls} from './OrbitControls.js';
-import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.2';
-import {Lighting} from './lighting.js?v=1.2';
-import {makeRenderer} from './renderer.js?v=1.2';
+import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.3';
+import {Lighting} from './lighting.js?v=1.3';
+import {makeRenderer} from './renderer.js?v=1.3';
+import {buildBridgeMesh} from './path-connections.js?v=1.3';
 
 export const knownProps=Object.keys(PROP_CATALOG);
 export class Viewer {
@@ -30,6 +31,7 @@ export class Viewer {
     try{
       for(const record of project.objects){
         const root=record.editorType==='building'?new THREE.Mesh(new THREE.BoxGeometry(1,1,1),getMat(record.opacity)):createProp(record.propType);
+        const baseDimensions=root.userData.baseDimensions;
         // Eliminate circular editorRoot userData; the viewer only retains geometry metadata.
         root.traverse(child=>{child.userData={};});
         if(record.params&&record.editorType==='prop'){
@@ -38,10 +40,13 @@ export class Viewer {
         }
         root.name=record.name;root.position.fromArray(record.position);root.rotation.set(...record.rotation);
         root.scale.set(...record.scale.map((v,i)=>v*(record.mirror[['x','y','z'][i]]?-1:1)));
-        root.userData={record};
+        root.userData={record,id:record.id,propType:record.propType,baseDimensions};
         root.traverse(mesh=>{if(!mesh.isMesh)return;const side=record.editorType==='building'?THREE.FrontSide:(Array.isArray(mesh.material)?mesh.material[0].side:mesh.material.side);mesh.material=getMat(record.opacity,side);mesh.visible=record.opacity>.001;mesh.userData.record=record;meshes.push(mesh);});
         group.add(root);
       }
+      group.updateMatrixWorld(true);
+      const lookup=new Map(group.children.map(root=>[root.userData.record.id,root]));
+      for(const link of project.pathConnections||[]){const a=lookup.get(link.a),b=lookup.get(link.b);if(a?.userData.propType!=='path'||b?.userData.propType!=='path')continue;const built=buildBridgeMesh(a,b);if(!built.ok)continue;const mesh=built.mesh,opacity=Math.min(a.userData.record.opacity,b.userData.record.opacity),key=`patch:${opacity}`;mesh.material.dispose();if(!materials.has(key)){const mat=this.makeMaterial(opacity,0xf7fafa,THREE.DoubleSide);mat.polygonOffset=true;mat.polygonOffsetFactor=-1;mat.polygonOffsetUnits=-1;materials.set(key,mat);}mesh.material=materials.get(key);delete mesh.raycast;mesh.renderOrder=0;mesh.frustumCulled=true;mesh.userData={record:{id:link.id,editorType:'prop',propType:'path',opacity}};meshes.push(mesh);group.add(mesh);}
       group.updateMatrixWorld(true);
       const bounds=new THREE.Box3().setFromObject(group);
       if(bounds.isEmpty())bounds.set(new THREE.Vector3(-5,0,-5),new THREE.Vector3(5,2,5));

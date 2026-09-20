@@ -1,4 +1,4 @@
-import {distance,clamp} from './math.js?v=1.2';
+import {distance,clamp} from './math.js?v=1.3';
 class MinHeap {
   constructor(){this.a=[];}
   push(item){const a=this.a;let i=a.push(item)-1;while(i>0){const p=(i-1)>>1;if(a[p].cost<=item.cost)break;a[i]=a[p];i=p;}a[i]=item;}
@@ -9,11 +9,11 @@ export function getDestinations(project){
   const {nodes,edges}=project.network,connected=new Set(edges.flatMap(e=>[e.a,e.b]));
   if(!edges.length)return [];
   const available=nodes.filter(n=>connected.has(n.id));
-  if(!project.places.length)return available.map(n=>({id:n.id,nodeId:n.id,name:n.name,position:n.position}));
-  return project.places.map(p=>{
+  if(!project.places.length)return available.map(n=>({id:n.id,nodeId:n.id,name:n.name,position:n.position,accessPosition:n.position,accessDistance:0}));
+  return project.places.filter(p=>p.visible!==false).map(p=>{
     let node=available.find(n=>n.id===p.routeNodeId);
     if(!node)node=available.reduce((best,n)=>!best||distance(n.position,p.position)<distance(best.position,p.position)?n:best,null);
-    return node?{id:p.id,nodeId:node.id,name:p.name,position:node.position,accessDistance:distance(p.position,node.position)}:null;
+    return node?{...p,nodeId:node.id,position:p.position,accessPosition:node.position,accessDistance:distance(p.position,node.position)}:null;
   }).filter(Boolean);
 }
 export function findRoute(network,from,to,mode='standard',scores=new Map()){

@@ -1,22 +1,24 @@
-import {Viewer,knownProps} from './viewer.js?v=1.2';
-import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.2';
-import {getDestinations,findRoute} from './routing.js?v=1.2';
-import {ShadeIndex} from './shade.js?v=1.2';
-import {RouteVisual} from './route-visual.js?v=1.2';
-import {WalkController} from './walk.js?v=1.2';
-import {installIcons} from './icons.js?v=1.2';
-import {protectViewerGestures} from './interaction.js?v=1.2';
+import {Viewer,knownProps} from './viewer.js?v=1.3';
+import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.3';
+import {getDestinations,findRoute} from './routing.js?v=1.3';
+import {ShadeIndex} from './shade.js?v=1.3';
+import {RouteVisual} from './route-visual.js?v=1.3';
+import {WalkController} from './walk.js?v=1.3';
+import {installIcons} from './icons.js?v=1.3';
+import {protectViewerGestures} from './interaction.js?v=1.3';
+import {ExplorerUI} from './explorer-ui.js?v=1.3';
+import {routeFromLocation,nearestNetworkPoint} from './network-walk.js?v=1.3';
 
 const $=id=>document.getElementById(id);
 installIcons();
-let viewer,walk,routeVisual,shade,project,userProject,demoProject,isDemo=false,selectedRoute=null,destinations=[],operation=0,busy=false,toastTimer;
+let viewer,walk,routeVisual,shade,explorer,project,userProject,demoProject,isDemo=false,selectedRoute=null,destinations=[],operation=0,busy=false,toastTimer;
 const formatNumber=n=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:1}).format(n);
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,6000);}
 function loading(show,title='Un momento en Paraíso',detail='Cargando la maqueta…',cancellable=false){busy=show;if(walk){walk.suspended=show||$('helpDialog').open;if(show)walk.resetInput();}$('loading').hidden=!show;$('loadingTitle').textContent=title;$('loadingDetail').textContent=detail;$('loadingProgress').value=0;$('cancelBake').hidden=!cancellable;$('importButton').disabled=show;}
 function collapsePanel(collapsed){$('routePanel').classList.toggle('is-collapsed',collapsed);$('panelToggle').setAttribute('aria-expanded',String(!collapsed));}
-function clearRoute(){selectedRoute=null;routeVisual?.clear();$('routeResult').hidden=true;$('fitRouteButton').disabled=true;$('mobileWalkButton').hidden=true;}
+function clearRoute(){selectedRoute=null;routeVisual?.clear();explorer?.setDestination(null);$('routeResult').hidden=true;$('fitRouteButton').disabled=true;$('mobileWalkButton').hidden=true;}
 function hideLookHint(){$('lookHint').classList.remove('is-visible');$('lookHint').setAttribute('aria-hidden','true');}
-function closeWalk(){walk?.stop();hideLookHint();$('workspace').classList.remove('is-walking');$('walkHUD').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');viewer.dirty=true;}
+function closeWalk(){walk?.stop();hideLookHint();$('workspace').classList.remove('is-walking');$('walkHUD').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');explorer?.walkStopped();viewer.dirty=true;}
 function fillDestinations(){
   destinations=getDestinations(project);
   for(const select of [$('fromSelect'),$('toSelect')]){select.replaceChildren();for(const dest of destinations)select.append(new Option(dest.name,dest.id));}
@@ -25,8 +27,8 @@ function fillDestinations(){
   $('routeForm').hidden=!ready;$('emptyRoutes').hidden=ready;$('showRoute').disabled=!ready;
   $('modelInfo').textContent=`${project.objects.length} objetos · ${project.network.routes.length ? project.network.routes.length+' rutas' : project.network.edges.length ? 'Caminos conectados':'Sin rutas'}`;
   const hasModel=project.objects.length>0;
-  $('emptyRouteMessage').textContent=hasModel?'Esta maqueta aún no tiene rutas.':'Carga tu maqueta para comenzar.';
-  $('emptyRouteHint').textContent=hasModel?'Guárdalas en el diseñador y vuelve a cargar el archivo.':'Usa Cargar maqueta o explora el ejemplo de abajo.';
+  $('emptyRouteMessage').textContent=hasModel?(project.network.edges.length?'Explora los caminos de tu maqueta.':'Esta maqueta aún no tiene rutas.'):'Carga tu maqueta para comenzar.';
+  $('emptyRouteHint').textContent=hasModel?(project.network.edges.length?'Activa el modo libre o agrega más lugares para planear un recorrido.':'Guárdalas en el diseñador y vuelve a cargar el archivo.'):'Usa Cargar maqueta en modo editor o explora el ejemplo de abajo.';
   if(!hasModel)$('modelInfo').textContent='Sin maqueta cargada';
   $('sunEnabled').disabled=!hasModel;
 }
@@ -44,10 +46,42 @@ async function useProject(next,demo=false){
   $('modelTitle').textContent=demo?'Jardines del Mar':hasModel?next.name.split(' · ').at(-1):'Tu próxima perspectiva';
   $('modelSubtitle').textContent=demo?'Descubre sus caminos y recórrelos a tu ritmo.':hasModel?'Tu maqueta, desde otra perspectiva.':'Carga tu maqueta y descubre cada camino.';
   $('demoButton').querySelector('span').textContent=demo?(userProject?.objects.length?'Volver a mi maqueta':'Cerrar maqueta de ejemplo'):'Probar una maqueta con rutas';
-  fillDestinations();updateLightUI();viewer.renderer.compile(viewer.scene,viewer.camera);viewer.render();$('loadingProgress').value=1;
+  fillDestinations();explorer?.setProject(project);updateLightUI();viewer.renderer.compile(viewer.scene,viewer.camera);viewer.render();$('loadingProgress').value=1;
   loading(false);if(window.innerWidth<=760)collapsePanel(true);
 }
 function currentMode(){return document.querySelector('input[name=routeMode]:checked').value;}
+function applyRoute(route,from,to){
+  selectedRoute={...route,from,to};if(route.length>0)routeVisual.show(route);else routeVisual.clear();
+  explorer?.setDestination(to);
+  $('routeName').textContent=route.names.join(' · ')||'Camino entre tus destinos';
+  $('routeDistance').textContent=`${formatNumber(route.length)} m`;
+  $('routeTime').textContent=`≈ ${Math.max(1,Math.round(route.length/1.35/60))} min a pie`;
+  $('routeShade').textContent=shade.cache?`${Math.round(route.shade*100)}% con sombra`:'';
+  const access=to.accessDistance>Math.max(.2,viewer.baseEyeHeight*.5)?` La ruta termina en su acceso; el lugar está a ${formatNumber(to.accessDistance)} m en línea recta.`:'';
+  $('routeNote').textContent=(route.mode==='shade'?'Sombra estimada para la posición actual del sol. Puedes recalcular si cambias la luz.':route.mode==='fast'?'El camino conectado de menor distancia.':'Da prioridad a los caminos con nombre de tu maqueta.')+access;
+  $('routeResult').hidden=false;$('fitRouteButton').disabled=!route.length;$('mobileWalkButton').hidden=false;
+}
+async function goToPlace(place){
+  if(busy)return;const to=destinations.find(d=>d.id===place.id);if(!to){toast('Este lugar no tiene un acceso conectado. Puedes asignarlo en modo editor.');return;}
+  explorer.setDestination(to);explorer.closePlace();
+  if(!walk.active){$('toSelect').value=to.id;await showRoute();return;}
+  try{
+    const mode=currentMode(),location=walk.location(project.network),ticket=operation;
+    if(mode==='shade'&&!shade.cache){loading(true,'Encontrando el mejor camino','Comprobando la luz y las zonas cubiertas…');await shade.prepare(project.network,viewer.lighting.path,p=>$('loadingProgress').value=p);loading(false);}
+    if(ticket!==operation)return;
+    const route=routeFromLocation(project.network,location,to.nodeId,mode,shade.scores(viewer.lighting.position)),from={id:'current',name:'Tu posición',position:[...walk.currentPoint]};
+    applyRoute(route,from,to);startWalk();toast(`Continúa desde aquí hacia ${to.name}.`);
+  }catch(error){loading(false);if(error.name!=='AbortError')toast(error.message);}
+}
+function startFree(){
+  if(busy||!project.network.edges.length)return;
+  try{
+    const origin=destinations.find(d=>d.id===$('fromSelect').value),start=walk.active?walk.location(project.network):nearestNetworkPoint(project.network,origin?.accessPosition||origin?.position||project.network.nodes[0].position);
+    walk.startFree(project.network,start);clearRoute();$('workspace').classList.add('is-walking');$('walkHUD').hidden=false;$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');collapsePanel(true);
+    $('walkDestination').textContent='EXPLORACIÓN LIBRE';explorer.walkStarted();walk.update(0);showLookHint();
+    toast('Explora los caminos conectados. En los cruces podrás elegir hacia dónde seguir.');
+  }catch(error){toast(error.message);}
+}
 async function showRoute(){
   if(busy)return;
   const from=destinations.find(d=>d.id===$('fromSelect').value),to=destinations.find(d=>d.id===$('toSelect').value);if(!from||!to){toast('Elige un punto de partida y un destino.');return;}
@@ -57,13 +91,7 @@ async function showRoute(){
     if(mode==='shade'&&!shade.cache){loading(true,'Encontrando el mejor camino','Comprobando la luz y las zonas cubiertas…');await shade.prepare(project.network,viewer.lighting.path,p=>$('loadingProgress').value=p);loading(false);}
     if(ticket!==operation)return;
     const route=findRoute(project.network,from.nodeId,to.nodeId,mode,shade.scores(viewer.lighting.position));
-    selectedRoute={...route,from,to};routeVisual.show(route);
-    $('routeName').textContent=route.names.join(' · ')||'Camino entre tus destinos';
-    $('routeDistance').textContent=`${formatNumber(route.length)} m`;
-    $('routeTime').textContent=`≈ ${Math.max(1,Math.round(route.length/1.35/60))} min a pie`;
-    $('routeShade').textContent=shade.cache?`${Math.round(route.shade*100)}% con sombra`:'';
-    $('routeNote').textContent=mode==='shade'?'Sombra estimada para la posición actual del sol. Puedes recalcular si cambias la luz.':mode==='fast'?'El camino conectado de menor distancia.':'Da prioridad a los caminos con nombre de tu maqueta.';
-    $('routeResult').hidden=false;$('fitRouteButton').disabled=false;$('mobileWalkButton').hidden=false;
+    applyRoute(route,from,to);
     // Showing a route never changes the user's framing; centering is explicit.
     if(window.innerWidth<=760)collapsePanel(true);
     toast(`${from.name} → ${to.name}. Ruta preparada.`);
@@ -76,12 +104,15 @@ function startWalk(){
   $('walkDestination').textContent=`HACIA ${selectedRoute.to.name}`;
   walk.start(selectedRoute,selectedRoute.from,selectedRoute.to);
   $('eyeHeight').value=walk.eye;$('eyeValue').textContent=`${formatNumber(walk.eye)} m`;
-  updateFovUI();hideLookHint();
+  updateFovUI();explorer.walkStarted();showLookHint();
+}
+function showLookHint(){
+  hideLookHint();
   $('lookHint').querySelector('small').textContent=matchMedia('(pointer:coarse)').matches?'El joystick te lleva hacia delante y atrás.':'W y S te llevan hacia delante y atrás.';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{if(walk.active&&!walk.hasLooked){$('lookHint').classList.add('is-visible');$('lookHint').setAttribute('aria-hidden','false');}}));
 }
 function updateFovUI(){$('walkFov').value=walk.fov;$('fovValue').textContent=`${Math.round(walk.fov)}°`;$('walkFov').setAttribute('aria-valuetext',`${Math.round(walk.fov)} grados`);}
-function changeFov(value){walk.setFov(value);updateFovUI();try{localStorage.setItem('paraiso.walkFov',String(walk.fov));}catch{}}
+function changeFov(value){walk.setFov(value);updateFovUI();}
 function updateLightUI(){
   const light=viewer.lighting,p=light.position;
   const name=p<.16?'Amanecer':p>.84?'Atardecer':p<.4?'Sol de mañana':p>.6?'Sol de tarde':'Mediodía';
@@ -102,7 +133,7 @@ async function enableSun(path=$('sunPath').value){
   }catch(error){viewer.lighting.setEnabled(false);$('sunEnabled').checked=false;$('sunControls').hidden=true;loading(false);if(error.name!=='AbortError')toast('No se pudo preparar la luz. La vista blanca sigue disponible.');updateLightUI();console.warn(error);}
 }
 function wireUI(){
-  $('importButton').addEventListener('click',()=>$('fileInput').click());
+  $('importButton').addEventListener('click',()=>{if(explorer.role==='editor')$('fileInput').click();});
   $('fileInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const next=await readProjectFile(file,knownProps);await useProject(next);toast('Tu maqueta está lista.');}catch(error){loading(false);toast(error.message);}finally{e.target.value='';}});
   $('demoButton').addEventListener('click',async()=>{if(busy)return;try{if(isDemo)await useProject(userProject,false);else{if(!demoProject){const response=await fetch('./demo.json');if(!response.ok)throw new Error('No se pudo abrir el ejemplo.');demoProject=parseProject(await response.json(),knownProps);}await useProject(demoProject,true);}}catch(error){loading(false);toast(error.message);}});
   $('routeForm').addEventListener('submit',e=>{e.preventDefault();showRoute();});
@@ -132,13 +163,13 @@ function wireUI(){
   window.addEventListener('pointerup',releaseRange);window.addEventListener('pointercancel',releaseRange);
   document.addEventListener('focusin',()=>walk.resetInput());
   $('walkSettingsButton').addEventListener('click',()=>{walk.resetInput();const show=$('walkSettings').hidden;$('walkSettings').hidden=!show;$('walkSettingsButton').setAttribute('aria-expanded',String(show));});
-  $('eyeHeight').addEventListener('input',()=>{walk.eye=Number($('eyeHeight').value);viewer.camera.near=Math.max(.001,walk.eye*.05);viewer.camera.updateProjectionMatrix();$('eyeValue').textContent=`${formatNumber(walk.eye)} m`;});
+  $('eyeHeight').addEventListener('input',()=>{if(explorer.role!=='editor')return;walk.eye=Number($('eyeHeight').value);viewer.camera.near=Math.max(.001,walk.eye*.05);viewer.camera.updateProjectionMatrix();$('eyeValue').textContent=`${formatNumber(walk.eye)} m`;});
   $('walkFov').addEventListener('input',()=>changeFov($('walkFov').value));
-  $('resetFov').addEventListener('click',()=>changeFov(70));
+  $('resetFov').addEventListener('click',()=>changeFov(100));
   $('helpButton').addEventListener('click',()=>{walk.resetInput();walk.suspended=true;$('helpDialog').showModal();});$('closeHelp').addEventListener('click',()=>$('helpDialog').close());
   $('helpDialog').addEventListener('close',()=>{walk.suspended=busy;if(walk.active)viewer.container.focus({preventScroll:true});});
   $('helpDialog').addEventListener('click',e=>{if(e.target===$('helpDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!$('helpDialog').open){if(walk.active)closeWalk();$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');}});
+  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!$('helpDialog').open&&!$('placeEditor').open){if(walk.active)closeWalk();explorer.closePlace();$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');}});
   viewer.onContextLost=()=>{viewer.lighting.abort?.abort();loading(true,'La vista se ha pausado','Esperando a que el dispositivo recupere la imagen…');};
   viewer.onContextRestored=()=>{viewer.lighting.invalidate();$('sunEnabled').checked=false;$('sunControls').hidden=true;loading(false);viewer.dirty=true;updateLightUI();toast('La vista se recuperó. Puedes volver a activar el sol.');};
 }
@@ -152,18 +183,22 @@ function registerTools(){
 async function init(){
   viewer=new Viewer($('scene'));shade=new ShadeIndex(viewer);routeVisual=new RouteVisual(viewer);
   walk=new WalkController(viewer,state=>{
+    if(state.free){$('directionText').textContent=state.choices.length?'Elige por dónde seguir':state.atEnd?'Final de este camino':state.cue.text;$('walkRemaining').textContent=state.atEnd?'Retrocede para volver al cruce.':`${formatNumber(state.traveled)} m explorados`;}
+    else{
     if(document.activeElement!==$('walkPosition'))$('walkPosition').value=Math.round(state.fraction*1000);
     $('directionText').textContent=state.atEnd?'Llegaste a tu destino':state.cue.text;
     $('directionArrow').style.transform=`rotate(${state.cue.angle*180/Math.PI}deg)`;
     $('walkRemaining').textContent=state.atEnd?'Puedes retroceder para volver.':`${formatNumber(state.remaining)} m para llegar`;
+    }
+    $('directionArrow').style.transform=`rotate(${state.cue.angle*180/Math.PI}deg)`;explorer?.onWalkState(state);
   });walk.bindJoystick($('joystick'),$('joystickThumb'));walk.onLook=hideLookHint;
-  try{const savedFov=localStorage.getItem('paraiso.walkFov');if(savedFov!==null)walk.setFov(savedFov);}catch{}
+  explorer=new ExplorerUI({viewer,walk,busy:()=>busy,destinations:()=>destinations,route:()=>selectedRoute,origin:()=>destinations.find(d=>d.id===$('fromSelect').value),goTo:goToPlace,startFree,toast,onPlacesChanged:()=>{if(walk.active)closeWalk();clearRoute();fillDestinations();}});
   updateFovUI();protectViewerGestures(()=>walk.resetInput());wireUI();
   await useProject(emptyProject());registerTools();
   let previous=performance.now(),lastRender=0,lastUI=0;const minFrame=matchMedia('(pointer:coarse)').matches?1000/30:1000/60;
   function frame(time){requestAnimationFrame(frame);const dt=Math.min((time-previous)/1000,.05);previous=time;if(document.hidden||busy)return;viewer.update();viewer.lighting.update(dt);walk.update(dt);const animated=routeVisual.update()||(viewer.lighting.enabled&&viewer.lighting.playing)||!!viewer.transition;
-    if((viewer.dirty||animated)&&time-lastRender>=minFrame){viewer.render();lastRender=time;}
-    if(time-lastUI>150){updateLightUI();const heading=viewer.camera.rotation.y;$('compassNeedle').style.transform=`rotate(${heading*180/Math.PI}deg)`;lastUI=time;}
+    if((viewer.dirty||animated)&&time-lastRender>=minFrame){explorer.pins.update();viewer.render();lastRender=time;}
+    if(time-lastUI>100){updateLightUI();explorer.update();const heading=viewer.camera.rotation.y;$('compassNeedle').style.transform=`rotate(${heading*180/Math.PI}deg)`;lastUI=time;}
   }requestAnimationFrame(frame);
 }
 init().catch(error=>{console.error(error);loading(false);const layer=document.createElement('div');layer.className='fatal';const title=document.createElement('h2');title.textContent='No pudimos abrir la maqueta';const detail=document.createElement('p');detail.textContent=error.message||'Comprueba que el navegador admita WebGL y vuelve a cargar.';const button=document.createElement('button');button.className='button';button.textContent='Volver a intentar';button.addEventListener('click',()=>location.reload());layer.append(title,detail,button);$('workspace').append(layer);});

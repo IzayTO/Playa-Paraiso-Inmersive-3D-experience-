@@ -1,6 +1,6 @@
 {
   "schema": "resort-map-builder",
-  "version": 6,
+  "version": 7,
   "name": "Jardines del Mar · Ejemplo",
   "editor": {
     "name": "Resort Explorer demo",
@@ -892,6 +892,10 @@
     {
       "id": "p-lobby",
       "name": "Lobby",
+      "category": "lobby",
+      "color": "#5b7394",
+      "hours": "24 horas · Ejemplo",
+      "description": "El punto de bienvenida de Jardines del Mar. Información de demostración.",
       "position": [
         -18,
         0,
@@ -902,6 +906,10 @@
     {
       "id": "p-beach",
       "name": "Club de playa",
+      "category": "restaurante",
+      "color": "#b47c55",
+      "hours": "09:00–20:00 · Ejemplo",
+      "description": "Un lugar para encontrarte con el mar al final del paseo. Información de demostración.",
       "position": [
         18,
         0,
@@ -912,6 +920,8 @@
     {
       "id": "p-pool-a",
       "name": "Acceso piscina oeste",
+      "category": "piscina",
+      "color": "#4e8b9a",
       "position": [
         -10,
         0,
@@ -922,6 +932,8 @@
     {
       "id": "p-roof-a",
       "name": "Galería oeste",
+      "category": "general",
+      "color": "#7a668f",
       "position": [
         -18,
         0,

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {pointOnPath,clamp,distance} from './math.js?v=1.2';
+import {pointOnPath,clamp,distance} from './math.js?v=1.3';
 export class RouteVisual {
   constructor(viewer){this.viewer=viewer;this.group=new THREE.Group();viewer.scene.add(this.group);this.route=null;}
   clear(){for(const child of [...this.group.children]){child.geometry?.dispose();child.material?.dispose();this.group.remove(child);}this.route=null;this.viewer.dirty=true;}

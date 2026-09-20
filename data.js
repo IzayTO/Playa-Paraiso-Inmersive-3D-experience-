@@ -1,4 +1,4 @@
-// Wizard Map Design v1–v6. The reference image and all editor UI state are excluded.
+// Wizard Map Design v1–v7. Display only geometry, navigation and place data.
 const finite = (n, fallback = 0) => Number.isFinite(Number(n)) ? Number(n) : fallback;
 const text = (v, fallback = '', max = 120) => (typeof v === 'string' ? v.trim() : fallback).slice(0, max);
 const vector = (v, fallback = [0, 0, 0]) => {
@@ -6,10 +6,20 @@ const vector = (v, fallback = [0, 0, 0]) => {
   if (v.slice(0, 3).some(n => !Number.isFinite(Number(n)) || Math.abs(Number(n)) > 1e6)) throw new Error('La maqueta contiene una coordenada fuera de rango.');
   return v.slice(0, 3).map(Number);
 };
-export function emptyProject(){return {schema:'resort-map-builder',version:6,name:'Sin maqueta',objects:[],places:[],network:{nodes:[],edges:[],routes:[]}};}
+export const PLACE_TYPES={general:'Lugar',edificio:'Edificio',lobby:'Lobby',piscina:'Piscina',restaurante:'Restaurante',spa:'Spa',recepcion:'Recepción'};
+export const PLACE_COLORS={general:'#59656f',edificio:'#6c655d',lobby:'#5b7394',piscina:'#4e8b9a',restaurante:'#8b694e',spa:'#7a668f',recepcion:'#5f8268'};
+export function normalizePlace(p,i=0){
+  if(!p||typeof p!=='object')throw new Error('Hay un lugar sin datos válidos.');
+  const category=text(p.category,'general',40)||'general';
+  return {id:text(p.id,`place-${i}`)||`place-${i}`,name:text(p.name,`Lugar ${i+1}`,80)||`Lugar ${i+1}`,category,
+    color:typeof p.color==='string'&&/^#[0-9a-f]{6}$/i.test(p.color.trim())?p.color.trim():PLACE_COLORS[category]||PLACE_COLORS.general,
+    position:vector(p.position),routeNodeId:text(p.routeNodeId)||null,visible:p.visible!==false,locked:!!p.locked,
+    hours:text(p.hours,'',120),description:text(p.description,'',600)};
+}
+export function emptyProject(){return {schema:'resort-map-builder',version:7,name:'Sin maqueta',objects:[],places:[],network:{nodes:[],edges:[],routes:[]},pathConnections:[]};}
 export function parseProject(input, knownPropTypes) {
   if (!input || input.schema !== 'resort-map-builder') throw new Error('Elige un JSON exportado desde Wizard Map Design / Resort Map Builder.');
-  if (![1,2,3,4,5,6].includes(Number(input.version))) throw new Error(`La versión ${input.version} aún no es compatible.`);
+  if (![1,2,3,4,5,6,7].includes(Number(input.version))) throw new Error(`La versión ${input.version} aún no es compatible.`);
   if (!Array.isArray(input.objects) || input.objects.length > 10000) throw new Error('La lista de objetos no es válida (máximo 10 000).');
   const known = new Set(knownPropTypes);
   const ids = new Set();
@@ -47,8 +57,21 @@ export function parseProject(input, knownPropTypes) {
     return {id,a,b,routeId:routeIds.has(e.routeId)?e.routeId:null,covered:e.covered===true,shade:Math.max(0,Math.min(1,finite(e.shade,0))),oneWay:e.oneWay===true};
   });
   if(input.places!==undefined&&(!Array.isArray(input.places)||input.places.length>2000))throw new Error('La lista de lugares no es válida.');
-  const places = (input.places || []).filter(p=>p.visible!==false).map((p,i)=>({id:text(p.id,`place-${i}`),name:text(p.name,`Lugar ${i+1}`,80),position:vector(p.position),routeNodeId:nodeIds.has(p.routeNodeId)?p.routeNodeId:null}));
-  return {schema:input.schema,version:input.version,name:text(input.name,'Mi maqueta',80),objects,places,network:{nodes,edges,routes}};
+  const placeIds=new Set();
+  const places=(input.places||[]).map((p,i)=>{const place=normalizePlace(p,i);if(placeIds.has(place.id))throw new Error('Hay lugares con identificadores repetidos.');placeIds.add(place.id);if(!nodeIds.has(place.routeNodeId))place.routeNodeId=null;return place;});
+  if(input.pathConnections!==undefined&&(!Array.isArray(input.pathConnections)||input.pathConnections.length>5000))throw new Error('Las uniones de caminos no son válidas.');
+  const pathConnections=(input.pathConnections||[]).filter(p=>p&&ids.has(p.a)&&ids.has(p.b)&&p.a!==p.b).map((p,i)=>({id:text(p.id,`path-link-${i}`),a:p.a,b:p.b}));
+  // Preserve the original geometry/network metadata when exporting place edits.
+  // A reference photograph is never needed in this viewer or its saved file.
+  const source={...input,settings:{...input.settings}};delete source.settings.referenceImage;
+  return {schema:input.schema,version:Number(input.version),name:text(input.name,'Mi maqueta',80),objects,places,network:{nodes,edges,routes},pathConnections,source};
+}
+
+export function serializeProject(project){
+  return {...(project.source||{}),schema:'resort-map-builder',version:7,name:project.name,savedAt:new Date().toISOString(),
+    objects:project.source?.objects||project.objects,routeNetwork:project.source?.routeNetwork||project.network,
+    pathConnections:project.pathConnections||[],places:project.places.map(p=>({...p,position:[...p.position]})),
+    explorer:{version:'1.3',guestFov:100,guestSpeed:1}};
 }
 
 export async function readProjectFile(file, known) {

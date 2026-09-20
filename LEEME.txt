@@ -1,205 +1,181 @@
-PARAÍSO · RESORT EXPLORER — 1.2, ARCHIVOS SIN CARPETAS
+PARAÍSO · RESORT EXPLORER — VERSIÓN 1.3
+Paquete completo para GitHub Pages / servidor estático. Sin carpetas internas.
 
-Actualización de la versión 1.1: estrellas al amanecer y atardecer, controles
-móviles independientes y campo de visión ajustable. Todo sigue sin carpetas.
+ACTUALIZAR DESDE EL TELÉFONO
 
-ACTUALIZAR DESDE IPHONE
+1. Descomprime el ZIP en la app Archivos.
+2. Abre la carpeta resultante: todos los archivos están al mismo nivel.
+3. En GitHub, ve a la LISTA PRINCIPAL de archivos de tu repositorio, donde
+   aparecen index.html y styles.css. Quédate en esa pantalla.
+4. Pulsa Add file > Upload files > Choose your files y selecciona TODOS los
+   archivos descomprimidos, incluido el nuevo index.html.
+5. Espera la carga y pulsa Commit changes.
 
-1. Descomprime el ZIP en Archivos.
-2. Entra en la carpeta resultante: todos los archivos están al mismo nivel.
-3. Abre la lista principal de archivos de tu repositorio en GitHub. Quédate en
-   la pantalla donde VES index.html: los archivos se suben AL LADO de él.
-   No abras index.html ni pegues nada dentro de su código.
-4. En Add file > Upload files > Choose your files, abre esa carpeta y selecciona
-   TODOS los archivos que contiene. No selecciones el ZIP cerrado ni la carpeta.
-5. Confirma la selección, espera la carga y pulsa Commit changes.
+IMPORTANTE: index.html es un archivo, no una carpeta. No lo abras para pegar
+archivos dentro de su código. Todos los archivos van A SU LADO, en la raíz.
+Reemplaza también index.html: esta actualización añade controles nuevos.
 
-Los archivos existentes con el mismo nombre se actualizan y los nuevos se
-añaden a esa misma lista. Son 26 archivos, sin subcarpetas.
-Conserva el archivo .nojekyll que ya tienes en GitHub;
-si no aparece en el selector del iPhone, no necesitas volver a subirlo.
+Son 32 archivos. Conserva .nojekyll si ya está en GitHub; si no aparece en el
+selector del teléfono, no necesitas volver a subir ese archivo vacío.
+Las carpetas antiguas data, js y vendor pueden quedarse: esta versión no las
+utiliza. Si todavía conservas data/resort.json, puedes retirar ese archivo
+para eliminar la antigua copia de tu maqueta personal del repositorio.
 
-No necesitas borrar las carpetas antiguas data, js y vendor para probar:
-esta versión ya no las utiliza. Puedes dejarlas ahí.
-Si todavía existe data/resort.json, elimina únicamente ese archivo para retirar
-la copia de tu maqueta personal del repositorio. El nuevo paquete no lo incluye
-ni lo carga. No borres demo.json de la raíz: es el ejemplo opcional.
+El ZIP no incluye tu maqueta personal ni la carga automáticamente. demo.json
+es el ejemplo opcional. Abre el enlace habitual cuando GitHub Pages termine
+de publicar. Si aparece la versión anterior, prueba una pestaña privada.
+No necesitas compilar, instalar paquetes ni reconfigurar Pages.
+El visor debe abrirse mediante HTTP/HTTPS; Archivos de iOS no ejecuta la web.
 
-Espera la publicación de GitHub Pages y abre el mismo enlace de siempre.
-Si ves la versión anterior, prueba una pestaña privada tras la publicación.
+HUÉSPED Y EDITOR
 
-No necesitas instalar nada, compilar ni cambiar la configuración de Pages.
-Los archivos deben abrirse desde tu página publicada, mediante HTTP/HTTPS.
+El botón «Vista: Editor» / «Vista: Huésped» alterna entre ambos modos.
+La página abre en Editor. Añade ?modo=huesped al enlace para abrir Huésped.
+Este selector cambia la interfaz; no es un acceso con contraseña.
 
-NOVEDADES DE LA VERSIÓN 1.2
+HUÉSPED:
+- En primera persona: joystick, indicación compacta del recorrido y salida.
+- Dedo izquierdo: joystick, solo avanzar o retroceder por los caminos.
+- Dedo derecho: arrastrar la escena para mirar. El joystick nunca gira la
+  cámara, aunque lo desplaces en diagonal.
+- FOV fijo en 100° y velocidad fija en 1×. No hay ajustes de luz, altura,
+  velocidad, FOV ni minimapa en esta vista inmersiva simplificada.
+- Las opciones de dirección aparecen al llegar a un cruce en modo libre.
+- Puedes tocar un marcador para consultar el lugar o elegir un destino.
+- Conserva el cielo y la iluminación que hayas preparado en Editor.
 
-- Estrellas solo en el hemisferio superior: 1 400 puntos fijos, distribuidos
-  sin retícula, de tamaños, brillos y tonos variados. No hay una esfera inferior.
-  Aparecen con Sol y sombras + Cielo azul activados, cerca del amanecer y
-  atardecer. Se desvanecen gradualmente con la altura del sol y no se dibujan
-  al mediodía. No giran al desplazarte ni se superponen sobre los edificios.
-  Es una composición visual, no un catálogo astronómico.
-- El cielo opuesto al sol se oscurece de forma amplia y gradual al amanecer
-  y atardecer, conservando sus paletas distintas y el horizonte suave.
-- Se suavizan las bandas de color del cielo y de los materiales con dithering
-  muy leve. No añade imágenes ni cambia la geometría u opacidad de la maqueta.
-- Se bloquean la selección de texto, el arrastre nativo y el menú de pulsación
-  larga dentro de la página. Los selectores, barras y botones siguen operativos.
-  Al interrumpirse un gesto se liberan sus controles para evitar que queden
-  atascados. Las interfaces propias de Safari y del sistema quedan fuera de
-  la página y no son modificadas.
-- El joystick solo avanza/retrocede según su componente vertical. Arrastrarlo
-  en diagonal no gira la cámara. Para mirar, arrastra la escena con otro dedo.
-  Ambos dedos se controlan de forma independiente; el teclado conserva A/D.
-- Al entrar en primera persona aparece Arrastra a los lados para mirar.
-  Desaparece suavemente al realizar el primer arrastre de la mirada y vuelve
-  a mostrarse en cada nueva entrada. Respeta Reducir movimiento.
-- El botón de ajustes de primera persona incluye Campo de visión, de 45° a
-  100°, y Restablecer a 70°. El cambio se ve al mover la barra. La preferencia
-  se guarda en este navegador cuando el almacenamiento está disponible.
-  Al salir se recupera el encuadre y FOV anterior de la vista general.
+EDITOR:
+- Conserva los controles de vista general y luz/ambiente.
+- El botón de ajustes en primera persona permite FOV de 45° a 120°, altura,
+  velocidad de 0.5× a 4×, visibilidad y opacidad del minimapa.
+- El FOV empieza en 100° cada vez que entras en primera persona. La antigua
+  preferencia de 70° del navegador ya no se usa. Restablecer vuelve a 100°.
+- «Norte fijo» mantiene la orientación del minimapa; «Gira conmigo» lo orienta
+  según tu mirada. Ambos siguen tu posición. La opacidad va de 35% a 100%.
+- N corresponde a -Z y E a +X. X y Z se muestran debajo. Son los ejes del
+  archivo, no coordenadas GPS. El minimapa reutiliza un dibujo aéreo de la
+  geometría sin ejecutar un segundo render de sombras.
 
-PARA PROBAR LO NUEVO
+En computadora: W/S o flechas para avanzar/volver, A/D o flechas laterales
+para girar; arrastrar también cambia la mirada. Las barras devuelven el
+control al recorrido al soltarlas. La selección de texto y la pulsación larga
+se bloquean en el visor; los campos del editor sí permiten editar texto.
 
-1. Abre el ejemplo o carga tu maqueta y activa Sol y sombras y Cielo azul.
-2. Lleva la barra solar cerca de Amanecer o Atardecer y mira hacia arriba,
-   especialmente en la dirección contraria al sol. Lleva luego la barra al
-   centro para comprobar cómo desaparecen las estrellas.
-3. Selecciona una ruta, entra en primera persona y mantén el joystick con
-   el dedo izquierdo. Con el derecho, arrastra directamente sobre la escena.
-4. Abre el botón de ajustes (deslizadores) y cambia Campo de visión.
+MARCADORES, TARJETAS Y «LLÉVAME AHÍ»
 
-Se verificaron diez pruebas automatizadas: controles con dos dedos, diagonales,
-cancelación y recuperación, FOV, selección, teclado tras barras, conservación
-de cámara, continuidad solar, distribución y desaparición de estrellas.
-Se compilaron los shaders reales con OpenGL/Mesa y se revisaron renders de
-los cielos y la maqueta. No equivale a una prueba completa en Safari o en un
-iPhone físico; la pulsación larga y la fluidez requieren esa comprobación real.
+Compatibilidad con el formato de Wizard Map Design / Resort Map Builder,
+versiones 1 a 7. Se importan nombre, categoría, color, posición, visibilidad,
+bloqueo y acceso a la red. Se conservan categorías desconocidas. También se
+reconstruyen las uniones geométricas pathConnections de la versión 7.
 
-MEJORAS CONSERVADAS DE LA VERSIÓN 1.1
+Las señales normales se orientan a la cámara, con relieve visual. No generan
+sombras. Un edificio opaco las oculta; un edificio transparente delante se
+mezcla sobre ellas. Los lugares ocultos no aparecen para el huésped, pero se
+pueden editar desde la lista en Editor.
 
-- Mostrar ruta conserva la cámara que elegiste. El recorrido se dibuja sin
-  recentrar ni inclinar tu vista. Puedes seguir orbitando durante la animación.
-- Centrar vista y Centrar en la ruta siguen disponibles cuando tú los pulses.
-- Al salir de primera persona vuelves al encuadre que tenías antes de entrar.
-- W/S/A/D vuelven a funcionar después de usar una barra o pulsar un botón.
-  Al soltar una barra con el mouse o el dedo se devuelve el foco a la escena.
-  Las flechas conservan el manejo accesible de los controles mientras se editan.
-- Se reduce el intervalo de profundidad de la cámara y se usa un único suelo
-  receptor. El cielo se dibuja como fondo, sin una esfera o plano que pueda
-  atravesar los objetos al acercarse o cambiar de vista.
-- Sombras continuas: se calcula la proyección de la posición actual del sol.
-  Se eliminó el fundido entre 49 posiciones de la versión 1.0.
-- El filtrado considera la inclinación de la superficie para evitar las franjas
-  de autosombreado sobre paredes y techos. No se usa ruido aleatorio para las
-  sombras de objetos transparentes.
-- Amanecer: lavanda, rosa y melocotón, con luz suave. Atardecer: coral, naranja
-  y violeta. Ambos se mezclan gradualmente con el cielo diurno y acompañan al
-  sol al ir y volver. El horizonte conserva el efecto atmosférico en 360°.
-- El inicio queda vacío. La maqueta personal anterior se retiró del paquete.
-  Jardines del Mar sigue disponible mediante Probar una maqueta con rutas.
+Toca una señal o abre «Lugares de la maqueta». La tarjeta muestra nombre, tipo,
+distancia en línea recta y, si existen, horario y descripción. «Llévame ahí»
+marca el destino y prepara una ruta conectada. En vista general conserva tu
+encuadre; inicia con «Recorrer en primera persona».
 
-CARGAR UNA MAQUETA
+Si ya estás caminando, la nueva ruta empieza en tu posición sobre el camino,
+sin saltarte al nodo más cercano ni cambiar tu mirada. Si no hay conexión,
+se informa y se conserva el recorrido anterior. No se inventan atajos.
 
-Pulsa Cargar maqueta y selecciona el JSON exportado desde Wizard Map Design.
-Se conservan geometrías, escala, posición, rotación XYZ, reflejos y opacidad.
-No aparecen la imagen de referencia, cuadrícula ni herramientas del diseñador.
-El archivo se procesa localmente en tu navegador. Permanece durante la sesión.
-Si vuelves a cargar la página, se abre otra vez el plano vacío.
+El DESTINO SELECCIONADO tiene una señal adicional siempre visible, incluso
+detrás de un edificio. Fuera de la vista aparece hacia el borde con una flecha.
+Su distancia es directa; el indicador del recorrido muestra la distancia
+pendiente por el camino. La ruta termina en el acceso, y la tarjeta de ruta
+informa si el marcador está separado de él. No se atraviesan edificios para
+llegar al centro del marcador.
 
-El ejemplo no sustituye el archivo que hayas importado: Volver a mi maqueta lo
-restaura. Si no cargaste ninguno, Cerrar maqueta de ejemplo vuelve al plano vacío.
+EDITAR INFORMACIÓN Y GUARDARLA
 
-RUTAS Y RECORRIDO
+1. Cambia a Editor.
+2. Toca un lugar y pulsa «Editar información y ubicación», o «+ Agregar lugar».
+3. Ajusta nombre, tipo, color, horario, descripción y coordenadas X/Y/Z.
+4. Desde la vista general puedes usar «Elegir ubicación sobre el plano».
+   Toca el suelo; se coloca en Y=0. Ajusta Y si lo necesitas.
+5. Asigna el nodo de acceso, o deja «Acceso más cercano».
+6. Guarda el lugar y pulsa «Guardar maqueta»: descarga paraiso-maqueta.json.
 
-Elige Desde, Hacia y Estándar / Rápida / Con sombra, después Mostrar ruta.
-Solo se puede entrar en primera persona cuando hay una ruta seleccionada.
-W / flecha arriba avanza; S / flecha abajo retrocede; A/D gira la mirada.
-Arrastra para mirar en 360°. En móvil usa el joystick y arrastra sobre la escena.
-La posición siempre sigue la ruta; puedes ir y volver después de llegar.
-La barra inferior permite saltar a cualquier posición. El control de altura
-ajusta la mirada a la escala de tu maqueta. Salir del recorrido o Escape vuelve
-al encuadre anterior. La ayuda y la preparación de luz pausan los controles.
+Los cambios se mantienen durante la sesión. Para conservarlos al cerrar o
+compartirlos, guarda el JSON y cárgalo nuevamente. No se usa una base de datos.
+La geometría original y la información de rutas se conservan al exportar.
+La imagen de referencia del diseñador no se incluye.
+Al modificar lugares durante un recorrido se vuelve a la vista general y
+se limpia la ruta anterior para que puedas recalcular sus accesos.
 
-Estándar favorece los caminos con nombre. Rápida elige menor distancia.
-Con sombra compara las conexiones y combina distancia con protección solar.
-El índice de cobertura se prepara al activar el sol o pedir una ruta con sombra.
-No cambia la ruta por sí solo mientras caminas: vuelve a Mostrar ruta para
-comparar después de mover el sol. La sombra de la ruta es una estimación.
+Este editor modifica información y ubicación de lugares. El diseñador de
+mapas sigue siendo la herramienta para edificios, gizmos, snaps y conexiones.
+Esas herramientas no aparecen en la vista huésped.
 
-Los lugares usan routeNodeId o el nodo conectado más cercano como acceso.
-Los objetos visuales de camino no sustituyen la red de rutas del archivo.
-Si no hay destinos conectados, la aplicación lo indica y no inventa recorridos.
-Las distancias usan las unidades del JSON. Se necesita una maqueta calibrada
-para que los metros y los tiempos estimados representen distancias reales.
+EXPLORACIÓN LIBRE
 
-SOL Y AMBIENTE
+«Explorar todos los caminos» entra en primera persona sin destino obligatorio.
+En los ajustes de Editor, «Continuar en modo libre» cambia desde una ruta
+conservando tu posición. El joystick mantiene su función vertical.
 
-La primera carga es una vista blanca. Activa Sol y sombras para preparar los
-recursos de iluminación y el índice de caminos; después se mueve la proyección
-actual del sol, sin mezclar sombras de instantes distintos.
-Elige trayectoria diagonal o por un lado y de 5 a 60 minutos por trayecto.
-El sol llega al otro extremo y regresa continuamente. La barra lo pausa en la
-posición elegida y Reproducir lo reanuda. Cielo azul se activa por separado;
-con el sol encendido también muestra el amanecer y el atardecer.
+- Un solo camino permite avanzar y retroceder.
+- Si hay una sola continuación, se sigue automáticamente.
+- Ante varias continuaciones se detiene el movimiento y aparecen opciones.
+  Sus nombres siguen las rutas del archivo y su orientación cambia con tu
+  mirada. Elige el camino y vuelve a avanzar.
+- Retroceder recorre el historial de caminos. Puedes regresar a un cruce y
+  escoger otra rama. No hay desplazamiento fuera de la red.
+- Las redes desconectadas no se unen automáticamente: sal del recorrido,
+  cambia el origen y entra en otra.
+- Los cruces necesitan un nodo compartido. Líneas que se cruzan visualmente
+  u objetos path unidos no conectan por sí mismos la red de navegación.
+- Si el archivo declara oneWay, la exploración libre respeta ese sentido.
 
-Los mapas se actualizan solo cuando cambia la dirección solar. Al pausar el
-sol puedes mover la cámara sin recalcularlos. En móvil se limita el dibujo a
-30 fotogramas por segundo; en escritorio a 60. La pestaña oculta se pausa.
-Hay un mapa para objetos opacos y otro solo si hay objetos transparentes,
-en lugar de almacenar 49 mapas. La geometría de sombra reutiliza los vértices
-originales. No se envía el JSON a un servidor ni se necesita un CDN.
+FUNCIONES ANTERIORES CONSERVADAS
 
-LÍMITES Y VERIFICACIÓN
+- Interfaz azul petróleo, turquesa y tonos claros en móvil y computadora.
+- Maqueta blanca inicial, sin cuadrícula, fotografías ni maqueta personal.
+- Rotaciones XYZ, escala, reflejos, geometrías paramétricas y opacidad.
+- Rutas estándar, rápida y con sombra; dibujo animado sin mover la cámara.
+- Salir de primera persona recupera el encuadre general que elegiste.
+- Sol de esquina a esquina, por un lado o diagonal, que va y vuelve de 5 a
+  60 minutos por trayecto. Puedes pausarlo o desplazar su posición.
+- Sombras continuas para la posición actual de la luz, sin fundidos entre
+  imágenes. Se reutilizan cuando solo cambia la cámara.
+- Cielo con horizonte suave en 360°, amanecer y atardecer de tonos distintos.
+- Estrellas solo en el hemisferio superior: aparecen cerca de los extremos
+  del día y desaparecen al mediodía. Requieren Sol y sombras y Cielo azul.
+  El cielo opuesto al sol se oscurece suavemente.
 
-Es una simulación de luz direccional con sombras filtradas, no ray tracing
-físico. Las transparencias conservan su opacidad visual. Su sombra usa la
-transmisión del obstáculo translúcido más próximo y la oclusión opaca; varias
-capas transparentes superpuestas son una aproximación. No hay refracción ni
-rebotes completos de luz. Geometrías exactamente superpuestas en el archivo
-pueden necesitar corregirse en el diseñador.
+PRECISIÓN Y RENDIMIENTO
 
-Se verificaron mediante pruebas de código: importación de los 58 objetos
-originales sin alterar transformaciones, catálogo de props, rutas, regreso,
-dirección relativa, control solar y continuidad de la cámara de sombras por
-el mediodía, recuperación de W/S tras las barras y foco en campos editables.
+Las distancias usan las unidades del archivo como metros. La altura de mirada
+se estima a partir de los edificios y se puede ajustar en Editor. Los tiempos
+de recorrido son orientativos, calculados para un paso humano habitual.
+La luz es una simulación visual, sin fecha, GPS ni cálculo astronómico real.
+Las sombras son proyecciones continuas, no ray tracing físico. Superficies
+duplicadas o transparencias superpuestas todavía pueden mostrar artefactos;
+no se modifica la geometría original para ocultarlos.
 
-Los shaders reales de material, profundidad y cielo se compilaron y enlazaron
-con OpenGL/Mesa. Se renderizaron la maqueta de ejemplo y la importada para
-revisar las franjas de autosombreado, sombras, amanecer, atardecer y primera
-persona. Es una comprobación de los shaders y geometrías, no una prueba completa
-del navegador. El entorno no permitió abrir la copia local en el navegador de
-pruebas. No se ha medido la fluidez en un iPhone físico ni en Safari real.
+El recorrido con sombra combina zonas cubiertas y una estimación de luz sobre
+los segmentos. Si cambias el sol, vuelve a mostrar la ruta para recalcularla.
+No se calculan sombras en el minimapa ni en los marcadores.
 
-ARCHIVOS PRINCIPALES
+VERIFICACIÓN
 
-index.html          Interfaz.
-styles.css          Diseño conservado y adaptación a móvil.
-app.js           Estado y controles.
-viewer.js        Geometría, cámara y suelo.
-lighting.js      Movimiento solar y coordinación de iluminación.
-shadows.js       Proyección continua y filtrado de sombras.
-atmosphere.js    Cielo, horizonte, amanecer y atardecer.
-stars.js         Estrellas del hemisferio superior y su visibilidad solar.
-interaction.js   Protección de gestos frente a selección y pulsación larga.
-walk.js          Primera persona y teclado/joystick.
-route-visual.js  Dibujo progresivo y flechas.
-shade.js         Índice de cobertura de rutas.
-routing.js       Elección de recorridos.
-data.js          Importación y estado vacío.
-props.js         Biblioteca original de geometría del constructor.
-demo.json     Ejemplo opcional Jardines del Mar.
-three.module.js, OrbitControls.js, outfit-latin.woff2 y sus licencias incluidos.
+21 pruebas automáticas de controles, formatos, edición, exportación, FOV,
+velocidad, rutas desde un punto intermedio, bifurcaciones, regreso, orientación
+del minimapa, preservación de cámara, estrellas y continuidad solar.
+El shader real de los marcadores se compiló en OpenGL/Mesa y se comprobó la
+ocultación opaca y la composición delante/detrás de transparencias.
+Se revisaron los dibujos del minimapa, los módulos, las referencias locales,
+los controles HTML y el contenido del ZIP.
 
-Formato compatible: resort-map-builder, versiones 1 a 6. Máximos: JSON de
-40 MB, 10 000 objetos, 10 000 nodos y 30 000 conexiones. El rendimiento real
-depende de la geometría y el equipo, no solo del número de objetos.
+No equivale a una prueba completa en Safari o en un iPhone físico. La fluidez
+y los gestos del sistema necesitan revisión en tu dispositivo.
 
-Prototipo independiente inspirado en Iberostar; no es un sitio oficial.
-La biblioteca de props procede de IzayTO/Map-desing, conservando su geometría.
+ARCHIVOS Y LICENCIAS
 
-Referencias técnicas utilizadas para los ajustes de esta versión:
-Safari: -webkit-user-select y -webkit-touch-callout
-https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariCSSRef/Articles/StandardCSSProperties.html
-Three.js: dithering de materiales
-https://threejs.org/docs/pages/Material.html#dithering
+Todos los archivos van en la raíz. No hay dependencias de CDN ni fuentes
+remotas. Three.js r160.1 y OrbitControls incluyen THREE-LICENSE.txt (MIT).
+Outfit incluye OUTFIT-LICENSE.txt. props.js y la adaptación path-connections.js
+corresponden a las geometrías del creador Wizard Map Design del usuario.
+Proyecto independiente inspirado visualmente en Iberostar, sin afiliación.
