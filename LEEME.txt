@@ -1,19 +1,22 @@
-PARAÍSO · RESORT EXPLORER — 1.1, ARCHIVOS SIN CARPETAS
+PARAÍSO · RESORT EXPLORER — 1.2, ARCHIVOS SIN CARPETAS
 
-Es la misma versión 1.1 corregida. Solo se reorganizaron los archivos y sus
-referencias para poder subirlos desde el teléfono.
+Actualización de la versión 1.1: estrellas al amanecer y atardecer, controles
+móviles independientes y campo de visión ajustable. Todo sigue sin carpetas.
 
 ACTUALIZAR DESDE IPHONE
 
 1. Descomprime el ZIP en Archivos.
 2. Entra en la carpeta resultante: todos los archivos están al mismo nivel.
-3. Abre la raíz de tu repositorio en GitHub, donde está index.html.
+3. Abre la lista principal de archivos de tu repositorio en GitHub. Quédate en
+   la pantalla donde VES index.html: los archivos se suben AL LADO de él.
+   No abras index.html ni pegues nada dentro de su código.
 4. En Add file > Upload files > Choose your files, abre esa carpeta y selecciona
    TODOS los archivos que contiene. No selecciones el ZIP cerrado ni la carpeta.
 5. Confirma la selección, espera la carga y pulsa Commit changes.
 
-Se reemplazan index.html, styles.css y LEEME.txt. Los demás archivos se añaden
-directamente a la raíz. Conserva el archivo .nojekyll que ya tienes en GitHub;
+Los archivos existentes con el mismo nombre se actualizan y los nuevos se
+añaden a esa misma lista. Son 26 archivos, sin subcarpetas.
+Conserva el archivo .nojekyll que ya tienes en GitHub;
 si no aparece en el selector del iPhone, no necesitas volver a subirlo.
 
 No necesitas borrar las carpetas antiguas data, js y vendor para probar:
@@ -28,7 +31,52 @@ Si ves la versión anterior, prueba una pestaña privada tras la publicación.
 No necesitas instalar nada, compilar ni cambiar la configuración de Pages.
 Los archivos deben abrirse desde tu página publicada, mediante HTTP/HTTPS.
 
-QUÉ CAMBIÓ
+NOVEDADES DE LA VERSIÓN 1.2
+
+- Estrellas solo en el hemisferio superior: 1 400 puntos fijos, distribuidos
+  sin retícula, de tamaños, brillos y tonos variados. No hay una esfera inferior.
+  Aparecen con Sol y sombras + Cielo azul activados, cerca del amanecer y
+  atardecer. Se desvanecen gradualmente con la altura del sol y no se dibujan
+  al mediodía. No giran al desplazarte ni se superponen sobre los edificios.
+  Es una composición visual, no un catálogo astronómico.
+- El cielo opuesto al sol se oscurece de forma amplia y gradual al amanecer
+  y atardecer, conservando sus paletas distintas y el horizonte suave.
+- Se suavizan las bandas de color del cielo y de los materiales con dithering
+  muy leve. No añade imágenes ni cambia la geometría u opacidad de la maqueta.
+- Se bloquean la selección de texto, el arrastre nativo y el menú de pulsación
+  larga dentro de la página. Los selectores, barras y botones siguen operativos.
+  Al interrumpirse un gesto se liberan sus controles para evitar que queden
+  atascados. Las interfaces propias de Safari y del sistema quedan fuera de
+  la página y no son modificadas.
+- El joystick solo avanza/retrocede según su componente vertical. Arrastrarlo
+  en diagonal no gira la cámara. Para mirar, arrastra la escena con otro dedo.
+  Ambos dedos se controlan de forma independiente; el teclado conserva A/D.
+- Al entrar en primera persona aparece Arrastra a los lados para mirar.
+  Desaparece suavemente al realizar el primer arrastre de la mirada y vuelve
+  a mostrarse en cada nueva entrada. Respeta Reducir movimiento.
+- El botón de ajustes de primera persona incluye Campo de visión, de 45° a
+  100°, y Restablecer a 70°. El cambio se ve al mover la barra. La preferencia
+  se guarda en este navegador cuando el almacenamiento está disponible.
+  Al salir se recupera el encuadre y FOV anterior de la vista general.
+
+PARA PROBAR LO NUEVO
+
+1. Abre el ejemplo o carga tu maqueta y activa Sol y sombras y Cielo azul.
+2. Lleva la barra solar cerca de Amanecer o Atardecer y mira hacia arriba,
+   especialmente en la dirección contraria al sol. Lleva luego la barra al
+   centro para comprobar cómo desaparecen las estrellas.
+3. Selecciona una ruta, entra en primera persona y mantén el joystick con
+   el dedo izquierdo. Con el derecho, arrastra directamente sobre la escena.
+4. Abre el botón de ajustes (deslizadores) y cambia Campo de visión.
+
+Se verificaron diez pruebas automatizadas: controles con dos dedos, diagonales,
+cancelación y recuperación, FOV, selección, teclado tras barras, conservación
+de cámara, continuidad solar, distribución y desaparición de estrellas.
+Se compilaron los shaders reales con OpenGL/Mesa y se revisaron renders de
+los cielos y la maqueta. No equivale a una prueba completa en Safari o en un
+iPhone físico; la pulsación larga y la fluidez requieren esa comprobación real.
+
+MEJORAS CONSERVADAS DE LA VERSIÓN 1.1
 
 - Mostrar ruta conserva la cámara que elegiste. El recorrido se dibuja sin
   recentrar ni inclinar tu vista. Puedes seguir orbitando durante la animación.
@@ -132,6 +180,8 @@ viewer.js        Geometría, cámara y suelo.
 lighting.js      Movimiento solar y coordinación de iluminación.
 shadows.js       Proyección continua y filtrado de sombras.
 atmosphere.js    Cielo, horizonte, amanecer y atardecer.
+stars.js         Estrellas del hemisferio superior y su visibilidad solar.
+interaction.js   Protección de gestos frente a selección y pulsación larga.
 walk.js          Primera persona y teclado/joystick.
 route-visual.js  Dibujo progresivo y flechas.
 shade.js         Índice de cobertura de rutas.
@@ -147,3 +197,9 @@ depende de la geometría y el equipo, no solo del número de objetos.
 
 Prototipo independiente inspirado en Iberostar; no es un sitio oficial.
 La biblioteca de props procede de IzayTO/Map-desing, conservando su geometría.
+
+Referencias técnicas utilizadas para los ajustes de esta versión:
+Safari: -webkit-user-select y -webkit-touch-callout
+https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariCSSRef/Articles/StandardCSSProperties.html
+Three.js: dithering de materiales
+https://threejs.org/docs/pages/Material.html#dithering

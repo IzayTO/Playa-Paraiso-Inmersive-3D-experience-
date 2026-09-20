@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {sunDirection,clamp} from './math.js?v=1.1-flat';
+import {sunDirection,clamp} from './math.js?v=1.2';
 
 // A small index per edge and solar position, independent of the moving camera.
 export class ShadeIndex {

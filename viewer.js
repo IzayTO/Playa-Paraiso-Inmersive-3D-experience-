@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from './OrbitControls.js';
-import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.1-flat';
-import {Lighting} from './lighting.js?v=1.1-flat';
-import {makeRenderer} from './renderer.js?v=1.1-flat';
+import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.2';
+import {Lighting} from './lighting.js?v=1.2';
+import {makeRenderer} from './renderer.js?v=1.2';
 
 export const knownProps=Object.keys(PROP_CATALOG);
 export class Viewer {
@@ -23,7 +23,7 @@ export class Viewer {
     this.renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();this.onContextLost?.();});
     this.renderer.domElement.addEventListener('webglcontextrestored',()=>this.onContextRestored?.());
   }
-  makeMaterial(opacity=1,color=0xf7fafa,side=THREE.FrontSide){const mat=new THREE.MeshStandardMaterial({color,roughness:.84,metalness:0,opacity,transparent:opacity<.999,depthWrite:opacity>=.999,side});this.lighting.decorate(mat);return mat;}
+  makeMaterial(opacity=1,color=0xf7fafa,side=THREE.FrontSide){const mat=new THREE.MeshStandardMaterial({color,roughness:.84,metalness:0,opacity,transparent:opacity<.999,depthWrite:opacity>=.999,side,dithering:true});this.lighting.decorate(mat);return mat;}
   buildModel(project){
     const group=new THREE.Group(),meshes=[],materials=new Map();
     const getMat=(opacity,side=THREE.FrontSide)=>{const key=`${opacity}:${side}`;if(!materials.has(key))materials.set(key,this.makeMaterial(opacity,0xf7fafa,side));return materials.get(key);};

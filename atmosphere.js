@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import {clamp} from './math.js?v=1.1-flat';
+import {clamp} from './math.js?v=1.2';
+import {Stars} from './stars.js?v=1.2';
 
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
 // Art-directed clear-sky palettes, not predictions of local weather.
@@ -34,6 +35,11 @@ export class Atmosphere {
         sky=mix(sky,vec3(1.0,.40,.11),dusk*lowBand*pow(toward,3.0)*.78);
         float oppositeBand=exp(-pow((d.y-.14)*7.0,2.0))*(1.0-toward);
         sky=mix(sky,vec3(.72,.46,.63),oppositeBand*(dawn*.32+dusk*.47));
+        // A broad twilight band opposite the sun, with the horizon left soft.
+        float away=smoothstep(.38,.98,1.0-toward);
+        float above=smoothstep(0.0,.20,d.y);
+        vec3 twilightShade=mix(vec3(.055,.073,.17),vec3(.045,.030,.13),dusk);
+        sky=mix(sky,twilightShade,away*above*(dawn*.55+dusk*.62));
         if(d.y<0.0)sky=mix(horizon,horizon*.70,min(1.0,-d.y*3.0));
         vec3 col=mix(vec3(.89,.935,.945),sky,skyOn);
         float alignment=max(0.0,dot(d,sunDirection));
@@ -43,14 +49,19 @@ export class Atmosphere {
         col+=sunOn*sunshine*(halo+disk*1.8);
         gl_FragColor=vec4(col,1.0);
         #include <colorspace_fragment>
+        // Sub-byte screen-space dither softens visible bands in the gradient.
+        float noise=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))))-.5;
+        gl_FragColor.rgb+=noise/255.0;
       }`
     });
     this.mesh=new THREE.Mesh(geometry,material);this.mesh.renderOrder=-10000;this.mesh.frustumCulled=false;scene.add(this.mesh);
+    this.stars=new Stars(scene);
   }
   update(camera,direction,position,skyEnabled,sunEnabled) {
     camera.updateMatrixWorld();this.uniforms.inverseProjection.value.copy(camera.projectionMatrixInverse);
     this.uniforms.cameraWorld.value.copy(camera.matrixWorld);this.uniforms.sunDirection.value.copy(direction);
     this.uniforms.skyOn.value=skyEnabled?1:0;this.uniforms.sunOn.value=sunEnabled?1:0;
     const color=solarAtmosphere(position,sunEnabled);this.uniforms.dawn.value=color.dawn;this.uniforms.dusk.value=color.dusk;
+    this.stars.update(camera,direction,skyEnabled,sunEnabled);
   }
 }

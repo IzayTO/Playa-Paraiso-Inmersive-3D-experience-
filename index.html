@@ -7,7 +7,7 @@
   <meta name="description" content="Explora tu maqueta de Playa Paraíso en 3D, descubre sus rutas y recórrela bajo la luz del sol.">
   <title>Paraíso · Resort Explorer</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23003c51'/%3E%3Cpath d='m16 4 3 8 9 1-7 6 2 9-7-5-7 5 2-9-7-6 9-1z' fill='%239ae2df'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css?v=1.1-flat">
+  <link rel="stylesheet" href="./styles.css?v=1.2">
   <script type="importmap">{"imports":{"three":"./three.module.js"}}</script>
 </head>
 <body>
@@ -80,8 +80,12 @@
       <div class="walk-progress"><input id="walkPosition" class="range" type="range" min="0" max="1000" value="0" aria-label="Posición en el recorrido"><div><span id="walkFrom"></span><span id="walkTo"></span></div></div>
       <div id="joystick" class="joystick" aria-label="Joystick: arriba para avanzar, abajo para retroceder" role="group"><span class="joy-up">▲</span><span class="joy-down">▼</span><div id="joystickThumb"></div></div>
       <div class="walk-hint">W / ↑ avanzar · S / ↓ volver<br>A / D girar · Arrastra para mirar</div>
-      <button id="walkSettingsButton" class="icon-button walk-settings-button" aria-label="Ajustar altura de la mirada"><i data-icon="sliders"></i></button>
-      <div id="walkSettings" class="walk-settings panel" hidden><label for="eyeHeight">Altura de la mirada <output id="eyeValue"></output></label><input id="eyeHeight" type="range" class="range" min="0.1" max="2.5" step="0.01" value="0.35"><p>En la escala de esta maqueta.</p></div>
+      <div id="lookHint" class="look-onboarding" role="status" aria-live="polite" aria-hidden="true"><i data-icon="hand"></i><span><strong>Arrastra a los lados para mirar</strong><small>El joystick te lleva hacia delante y atrás.</small></span></div>
+      <button id="walkSettingsButton" class="icon-button walk-settings-button" aria-label="Ajustar altura y campo de visión" aria-expanded="false" aria-controls="walkSettings"><i data-icon="sliders"></i></button>
+      <div id="walkSettings" class="walk-settings panel" hidden>
+        <label for="eyeHeight">Altura de la mirada <output id="eyeValue"></output></label><input id="eyeHeight" type="range" class="range" min="0.1" max="2.5" step="0.01" value="0.35"><p>En la escala de esta maqueta.</p>
+        <div class="fov-control"><label for="walkFov">Campo de visión <output id="fovValue">70°</output></label><input id="walkFov" type="range" class="range" min="45" max="100" step="1" value="70"><div class="range-labels"><span>Más cerrado</span><span>Más amplio</span></div><p>Amplía lo que ves a tu alrededor.</p><button id="resetFov" class="text-button">Restablecer a 70°</button></div>
+      </div>
     </div>
 
     <div id="loading" class="loading-layer" role="status" aria-live="polite"><div class="loading-card"><span class="loading-symbol">✳</span><p class="eyebrow">PREPARANDO TU EXPERIENCIA</p><h2 id="loadingTitle">Un momento en Paraíso</h2><p id="loadingDetail">Cargando la maqueta…</p><progress id="loadingProgress" max="1" value="0"></progress><button id="cancelBake" class="text-button" hidden>Volver a la vista blanca</button></div></div>
@@ -89,6 +93,6 @@
   </main>
   <dialog id="helpDialog"><button id="closeHelp" class="icon-button close-dialog" aria-label="Cerrar ayuda"><i data-icon="close"></i></button><p class="eyebrow">HAZLO A TU RITMO</p><h2>Explora Paraíso</h2><div class="help-grid"><article><i data-icon="hand"></i><h3>La maqueta, en tus manos</h3><p>Un dedo gira la vista. Dos dedos desplazan y pellizcan para acercar. En computadora: arrastra para girar, usa el botón derecho para desplazar y la rueda para acercar.</p></article><article><i data-icon="sun"></i><h3>Encuentra tu luz</h3><p>Activa el sol para preparar sus sombras. Después puedes reproducir su recorrido, cambiar su duración o fijar una posición. El cielo azul se activa por separado.</p></article><article><i data-icon="walk"></i><h3>Un camino a tu medida</h3><p>Elige una ruta para entrar en primera persona. Avanza o vuelve por el mismo camino con W y S, las flechas o el joystick. Arrastra la vista para mirar en cualquier dirección.</p></article><article><i data-icon="upload"></i><h3>Tu propia maqueta</h3><p>Carga el JSON de Wizard Map Design. Se conservan los objetos, su geometría y las rutas. La imagen de referencia, la cuadrícula y las herramientas del editor no se muestran.</p></article></div><p class="help-note">Prototipo independiente inspirado en Iberostar. Las distancias siguen las unidades del archivo; la luz y las sombras son una simulación visual.</p></dialog>
   <noscript>Activa JavaScript para abrir el visor tridimensional.</noscript>
-  <script type="module" src="./app.js?v=1.1-flat"></script>
+  <script type="module" src="./app.js?v=1.2"></script>
 </body>
 </html>

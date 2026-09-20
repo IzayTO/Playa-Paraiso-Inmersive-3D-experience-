@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import {sunDirection,clamp,advanceSun} from './math.js?v=1.1-flat';
-import {LiveShadows} from './shadows.js?v=1.1-flat';
-import {Atmosphere,solarAtmosphere} from './atmosphere.js?v=1.1-flat';
+import {sunDirection,clamp,advanceSun} from './math.js?v=1.2';
+import {LiveShadows} from './shadows.js?v=1.2';
+import {Atmosphere,solarAtmosphere} from './atmosphere.js?v=1.2';
 
 export class Lighting {
   constructor(viewer) {

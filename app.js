@@ -1,10 +1,11 @@
-import {Viewer,knownProps} from './viewer.js?v=1.1-flat';
-import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.1-flat';
-import {getDestinations,findRoute} from './routing.js?v=1.1-flat';
-import {ShadeIndex} from './shade.js?v=1.1-flat';
-import {RouteVisual} from './route-visual.js?v=1.1-flat';
-import {WalkController} from './walk.js?v=1.1-flat';
-import {installIcons} from './icons.js?v=1.1-flat';
+import {Viewer,knownProps} from './viewer.js?v=1.2';
+import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.2';
+import {getDestinations,findRoute} from './routing.js?v=1.2';
+import {ShadeIndex} from './shade.js?v=1.2';
+import {RouteVisual} from './route-visual.js?v=1.2';
+import {WalkController} from './walk.js?v=1.2';
+import {installIcons} from './icons.js?v=1.2';
+import {protectViewerGestures} from './interaction.js?v=1.2';
 
 const $=id=>document.getElementById(id);
 installIcons();
@@ -14,7 +15,8 @@ function toast(message){$('toast').textContent=message;$('toast').hidden=false;c
 function loading(show,title='Un momento en Paraíso',detail='Cargando la maqueta…',cancellable=false){busy=show;if(walk){walk.suspended=show||$('helpDialog').open;if(show)walk.resetInput();}$('loading').hidden=!show;$('loadingTitle').textContent=title;$('loadingDetail').textContent=detail;$('loadingProgress').value=0;$('cancelBake').hidden=!cancellable;$('importButton').disabled=show;}
 function collapsePanel(collapsed){$('routePanel').classList.toggle('is-collapsed',collapsed);$('panelToggle').setAttribute('aria-expanded',String(!collapsed));}
 function clearRoute(){selectedRoute=null;routeVisual?.clear();$('routeResult').hidden=true;$('fitRouteButton').disabled=true;$('mobileWalkButton').hidden=true;}
-function closeWalk(){walk?.stop();$('workspace').classList.remove('is-walking');$('walkHUD').hidden=true;$('walkSettings').hidden=true;viewer.dirty=true;}
+function hideLookHint(){$('lookHint').classList.remove('is-visible');$('lookHint').setAttribute('aria-hidden','true');}
+function closeWalk(){walk?.stop();hideLookHint();$('workspace').classList.remove('is-walking');$('walkHUD').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');viewer.dirty=true;}
 function fillDestinations(){
   destinations=getDestinations(project);
   for(const select of [$('fromSelect'),$('toSelect')]){select.replaceChildren();for(const dest of destinations)select.append(new Option(dest.name,dest.id));}
@@ -74,7 +76,12 @@ function startWalk(){
   $('walkDestination').textContent=`HACIA ${selectedRoute.to.name}`;
   walk.start(selectedRoute,selectedRoute.from,selectedRoute.to);
   $('eyeHeight').value=walk.eye;$('eyeValue').textContent=`${formatNumber(walk.eye)} m`;
+  updateFovUI();hideLookHint();
+  $('lookHint').querySelector('small').textContent=matchMedia('(pointer:coarse)').matches?'El joystick te lleva hacia delante y atrás.':'W y S te llevan hacia delante y atrás.';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{if(walk.active&&!walk.hasLooked){$('lookHint').classList.add('is-visible');$('lookHint').setAttribute('aria-hidden','false');}}));
 }
+function updateFovUI(){$('walkFov').value=walk.fov;$('fovValue').textContent=`${Math.round(walk.fov)}°`;$('walkFov').setAttribute('aria-valuetext',`${Math.round(walk.fov)} grados`);}
+function changeFov(value){walk.setFov(value);updateFovUI();try{localStorage.setItem('paraiso.walkFov',String(walk.fov));}catch{}}
 function updateLightUI(){
   const light=viewer.lighting,p=light.position;
   const name=p<.16?'Amanecer':p>.84?'Atardecer':p<.4?'Sol de mañana':p>.6?'Sol de tarde':'Mediodía';
@@ -124,12 +131,14 @@ function wireUI(){
   const releaseRange=e=>{if(e.pointerId===rangePointer){rangePointer=null;requestAnimationFrame(()=>{if(walk.active&&!busy&&!$('helpDialog').open)viewer.container.focus({preventScroll:true});});}};
   window.addEventListener('pointerup',releaseRange);window.addEventListener('pointercancel',releaseRange);
   document.addEventListener('focusin',()=>walk.resetInput());
-  $('walkSettingsButton').addEventListener('click',()=>$('walkSettings').hidden=!$('walkSettings').hidden);
+  $('walkSettingsButton').addEventListener('click',()=>{walk.resetInput();const show=$('walkSettings').hidden;$('walkSettings').hidden=!show;$('walkSettingsButton').setAttribute('aria-expanded',String(show));});
   $('eyeHeight').addEventListener('input',()=>{walk.eye=Number($('eyeHeight').value);viewer.camera.near=Math.max(.001,walk.eye*.05);viewer.camera.updateProjectionMatrix();$('eyeValue').textContent=`${formatNumber(walk.eye)} m`;});
+  $('walkFov').addEventListener('input',()=>changeFov($('walkFov').value));
+  $('resetFov').addEventListener('click',()=>changeFov(70));
   $('helpButton').addEventListener('click',()=>{walk.resetInput();walk.suspended=true;$('helpDialog').showModal();});$('closeHelp').addEventListener('click',()=>$('helpDialog').close());
   $('helpDialog').addEventListener('close',()=>{walk.suspended=busy;if(walk.active)viewer.container.focus({preventScroll:true});});
   $('helpDialog').addEventListener('click',e=>{if(e.target===$('helpDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!$('helpDialog').open){if(walk.active)closeWalk();$('viewMenu').hidden=true;$('walkSettings').hidden=true;}});
+  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!$('helpDialog').open){if(walk.active)closeWalk();$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');}});
   viewer.onContextLost=()=>{viewer.lighting.abort?.abort();loading(true,'La vista se ha pausado','Esperando a que el dispositivo recupere la imagen…');};
   viewer.onContextRestored=()=>{viewer.lighting.invalidate();$('sunEnabled').checked=false;$('sunControls').hidden=true;loading(false);viewer.dirty=true;updateLightUI();toast('La vista se recuperó. Puedes volver a activar el sol.');};
 }
@@ -147,7 +156,9 @@ async function init(){
     $('directionText').textContent=state.atEnd?'Llegaste a tu destino':state.cue.text;
     $('directionArrow').style.transform=`rotate(${state.cue.angle*180/Math.PI}deg)`;
     $('walkRemaining').textContent=state.atEnd?'Puedes retroceder para volver.':`${formatNumber(state.remaining)} m para llegar`;
-  });walk.bindJoystick($('joystick'),$('joystickThumb'));wireUI();
+  });walk.bindJoystick($('joystick'),$('joystickThumb'));walk.onLook=hideLookHint;
+  try{const savedFov=localStorage.getItem('paraiso.walkFov');if(savedFov!==null)walk.setFov(savedFov);}catch{}
+  updateFovUI();protectViewerGestures(()=>walk.resetInput());wireUI();
   await useProject(emptyProject());registerTools();
   let previous=performance.now(),lastRender=0,lastUI=0;const minFrame=matchMedia('(pointer:coarse)').matches?1000/30:1000/60;
   function frame(time){requestAnimationFrame(frame);const dt=Math.min((time-previous)/1000,.05);previous=time;if(document.hidden||busy)return;viewer.update();viewer.lighting.update(dt);walk.update(dt);const animated=routeVisual.update()||(viewer.lighting.enabled&&viewer.lighting.playing)||!!viewer.transition;

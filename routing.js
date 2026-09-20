@@ -1,4 +1,4 @@
-import {distance,clamp} from './math.js?v=1.1-flat';
+import {distance,clamp} from './math.js?v=1.2';
 class MinHeap {
   constructor(){this.a=[];}
   push(item){const a=this.a;let i=a.push(item)-1;while(i>0){const p=(i-1)>>1;if(a[p].cost<=item.cost)break;a[i]=a[p];i=p;}a[i]=item;}
