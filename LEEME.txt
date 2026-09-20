@@ -1,143 +1,149 @@
-PARAÍSO · RESORT EXPLORER — Versión 1.0
+PARAÍSO · RESORT EXPLORER — 1.1, ARCHIVOS SIN CARPETAS
 
-CÓMO PROBARLO
+Es la misma versión 1.1 corregida. Solo se reorganizaron los archivos y sus
+referencias para poder subirlos desde el teléfono.
 
-1. Descomprime el ZIP.
-2. Sube TODO el contenido al repositorio o a tu servidor, conservando las carpetas.
-   index.html debe quedar en la raíz, junto a styles.css y las carpetas js, data y vendor.
-3. En GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root) > Save.
-4. Abre la dirección publicada con Safari o Chrome. No abras el HTML directamente
-   desde la app Archivos: necesita un servidor HTTP/HTTPS para sus módulos y JSON.
+ACTUALIZAR DESDE IPHONE
 
-No necesitas instalar Node, npm ni compilar nada. Las bibliotecas y la fuente están
-incluidas; el sitio publicado no depende de un CDN.
+1. Descomprime el ZIP en Archivos.
+2. Entra en la carpeta resultante: todos los archivos están al mismo nivel.
+3. Abre la raíz de tu repositorio en GitHub, donde está index.html.
+4. En Add file > Upload files > Choose your files, abre esa carpeta y selecciona
+   TODOS los archivos que contiene. No selecciones el ZIP cerrado ni la carpeta.
+5. Confirma la selección, espera la carga y pulsa Commit changes.
 
-TU MAQUETA YA VIENE INCLUIDA
+Se reemplazan index.html, styles.css y LEEME.txt. Los demás archivos se añaden
+directamente a la raíz. Conserva el archivo .nojekyll que ya tienes en GitHub;
+si no aparece en el selector del iPhone, no necesitas volver a subirlo.
 
-El sitio abre tu resort.json del 19 de septiembre de 2026: 58 objetos.
-Se quitaron la imagen de referencia y las preferencias del editor de la copia que
-se incluye en data/resort.json. Se conservan las posiciones, escalas, rotaciones
-XYZ, reflejos de los ejes y opacidades. El archivo original entregado no se modificó.
+No necesitas borrar las carpetas antiguas data, js y vendor para probar:
+esta versión ya no las utiliza. Puedes dejarlas ahí.
+Si todavía existe data/resort.json, elimina únicamente ese archivo para retirar
+la copia de tu maqueta personal del repositorio. El nuevo paquete no lo incluye
+ni lo carga. No borres demo.json de la raíz: es el ejemplo opcional.
 
-Tu archivo todavía tiene vacíos places y routeNetwork. Por eso no ofrece destinos
-ni permite entrar en primera persona. Usa «Probar una maqueta con rutas» para
-comprobar esas funciones. «Volver a mi maqueta» restaura tu archivo.
+Espera la publicación de GitHub Pages y abre el mismo enlace de siempre.
+Si ves la versión anterior, prueba una pestaña privada tras la publicación.
 
-Para probar una exportación nueva, toca «Cargar maqueta» y elige tu nuevo JSON.
-La importación se hace en el navegador y no envía el archivo a un servidor.
-El archivo seleccionado dura en esa sesión. Para cambiar el que abre siempre,
-reemplaza data/resort.json en el repositorio y publica esa actualización.
+No necesitas instalar nada, compilar ni cambiar la configuración de Pages.
+Los archivos deben abrirse desde tu página publicada, mediante HTTP/HTTPS.
 
-CONTROLES
+QUÉ CAMBIÓ
 
-Vista aérea en móvil: un dedo gira; dos dedos desplazan; pellizcar acerca o aleja.
-Vista aérea en PC: arrastrar gira, botón derecho desplaza, rueda acerca o aleja.
-La diana centra. El botón de capas ofrece vista aérea, superior, frontal y de la ruta.
+- Mostrar ruta conserva la cámara que elegiste. El recorrido se dibuja sin
+  recentrar ni inclinar tu vista. Puedes seguir orbitando durante la animación.
+- Centrar vista y Centrar en la ruta siguen disponibles cuando tú los pulses.
+- Al salir de primera persona vuelves al encuadre que tenías antes de entrar.
+- W/S/A/D vuelven a funcionar después de usar una barra o pulsar un botón.
+  Al soltar una barra con el mouse o el dedo se devuelve el foco a la escena.
+  Las flechas conservan el manejo accesible de los controles mientras se editan.
+- Se reduce el intervalo de profundidad de la cámara y se usa un único suelo
+  receptor. El cielo se dibuja como fondo, sin una esfera o plano que pueda
+  atravesar los objetos al acercarse o cambiar de vista.
+- Sombras continuas: se calcula la proyección de la posición actual del sol.
+  Se eliminó el fundido entre 49 posiciones de la versión 1.0.
+- El filtrado considera la inclinación de la superficie para evitar las franjas
+  de autosombreado sobre paredes y techos. No se usa ruido aleatorio para las
+  sombras de objetos transparentes.
+- Amanecer: lavanda, rosa y melocotón, con luz suave. Atardecer: coral, naranja
+  y violeta. Ambos se mezclan gradualmente con el cielo diurno y acompañan al
+  sol al ir y volver. El horizonte conserva el efecto atmosférico en 360°.
+- El inicio queda vacío. La maqueta personal anterior se retiró del paquete.
+  Jardines del Mar sigue disponible mediante Probar una maqueta con rutas.
 
-Rutas: abre «Tu próximo destino», selecciona Desde y Hacia y pulsa «Mostrar ruta».
-En móvil el panel se pliega para ver el camino; «Recorrer» abre la primera persona.
-En PC usa «Recorrer en primera persona» dentro del resultado.
+CARGAR UNA MAQUETA
 
-Primera persona: W / flecha arriba avanza; S / flecha abajo retrocede;
-A / D o flechas izquierda/derecha giran la mirada. Arrastrar permite mirar en 360°.
-El joystick móvil avanza/retrocede verticalmente y gira horizontalmente.
-La posición siempre permanece sobre el camino. Puedes ir y volver tras llegar.
-El control de altura adapta la mirada a la escala de la maqueta.
-«Salir del recorrido» o Escape regresa a la vista aérea.
+Pulsa Cargar maqueta y selecciona el JSON exportado desde Wizard Map Design.
+Se conservan geometrías, escala, posición, rotación XYZ, reflejos y opacidad.
+No aparecen la imagen de referencia, cuadrícula ni herramientas del diseñador.
+El archivo se procesa localmente en tu navegador. Permanece durante la sesión.
+Si vuelves a cargar la página, se abre otra vez el plano vacío.
 
-SOL Y CIELO
+El ejemplo no sustituye el archivo que hayas importado: Volver a mi maqueta lo
+restaura. Si no cargaste ninguno, Cerrar maqueta de ejemplo vuelve al plano vacío.
 
-El botón del sol abre «Luz y ambiente».
-«Sol y sombras» prepara las sombras antes de comenzar. Puedes cancelar la preparación.
-Después, la secuencia se reutiliza al mover la cámara o al caminar. La primera
-preparación puede tardar más según la cantidad de objetos y el dispositivo.
-«Cielo azul» es independiente: añade el cielo y el horizonte claro en 360 grados.
-La trayectoria puede ser diagonal o por un lado del plano, sin dibujar una línea solar.
-La duración es de 5 a 60 minutos, en pasos de 5, por trayecto. Ida + regreso duran el doble.
-El sol va y vuelve. El deslizador lo pausa en la posición escogida; Reproducir lo reanuda.
-Cambiar la trayectoria vuelve a preparar las sombras. Desactivar y reactivar la misma
-trayectoria reutiliza la caché. Cambiar de maqueta descarta el cálculo anterior.
+RUTAS Y RECORRIDO
 
-Es una simulación visual: iluminación direccional y sombras precalculadas e
-interpoladas, no ray tracing físico. Hay 49 posiciones de sombra, filtradas para
-suavizar los bordes. Las transparencias proyectan una sombra aproximada. No se
-simulan reflexiones, refracciones ni rebotes completos de luz.
+Elige Desde, Hacia y Estándar / Rápida / Con sombra, después Mostrar ruta.
+Solo se puede entrar en primera persona cuando hay una ruta seleccionada.
+W / flecha arriba avanza; S / flecha abajo retrocede; A/D gira la mirada.
+Arrastra para mirar en 360°. En móvil usa el joystick y arrastra sobre la escena.
+La posición siempre sigue la ruta; puedes ir y volver después de llegar.
+La barra inferior permite saltar a cualquier posición. El control de altura
+ajusta la mirada a la escala de tu maqueta. Salir del recorrido o Escape vuelve
+al encuadre anterior. La ayuda y la preparación de luz pausan los controles.
 
-La geometría se dibuja cuando cambia la vista o la iluminación; los mapas de sombra
-NO se vuelven a renderizar en cada fotograma. La aplicación pausa su actualización
-al quedar en segundo plano. La secuencia móvil ocupa aproximadamente 49 MiB de
-texturas, además de la geometría y los recursos normales del navegador.
+Estándar favorece los caminos con nombre. Rápida elige menor distancia.
+Con sombra compara las conexiones y combina distancia con protección solar.
+El índice de cobertura se prepara al activar el sol o pedir una ruta con sombra.
+No cambia la ruta por sí solo mientras caminas: vuelve a Mostrar ruta para
+comparar después de mover el sol. La sombra de la ruta es una estimación.
 
-CÓMO SE ELIGE UNA RUTA
+Los lugares usan routeNodeId o el nodo conectado más cercano como acceso.
+Los objetos visuales de camino no sustituyen la red de rutas del archivo.
+Si no hay destinos conectados, la aplicación lo indica y no inventa recorridos.
+Las distancias usan las unidades del JSON. Se necesita una maqueta calibrada
+para que los metros y los tiempos estimados representen distancias reales.
 
-Rápida: camino conectado de menor distancia.
-Estándar: favorece las conexiones que pertenecen a rutas guardadas con nombre.
-Con sombra: equilibra longitud y protección frente al sol en su posición seleccionada.
-Compara la geometría por encima y en dirección al sol; también acepta covered/shade
-en el JSON. Esas propiedades adicionales son opcionales. Una cubierta puede
-detectarse aunque el diseñador no exporte esa etiqueta.
+SOL Y AMBIENTE
 
-La ruta no cambia sola mientras caminas. Para volver a comparar tras mover el sol,
-sal de primera persona y pulsa «Mostrar ruta» de nuevo.
-Los lugares usan routeNodeId si existe; en caso contrario se usa el nodo más cercano
-como acceso. La navegación empieza y termina en los accesos de la red, sin inventar
-caminos fuera de ella. Si no hay lugares, se ofrecen los nodos conectados.
-No hay reconocimiento automático de caminos dibujados: necesitas guardar la red
-de rutas en el diseñador. Las piezas visuales de tipo path no sustituyen esa red.
+La primera carga es una vista blanca. Activa Sol y sombras para preparar los
+recursos de iluminación y el índice de caminos; después se mueve la proyección
+actual del sol, sin mezclar sombras de instantes distintos.
+Elige trayectoria diagonal o por un lado y de 5 a 60 minutos por trayecto.
+El sol llega al otro extremo y regresa continuamente. La barra lo pausa en la
+posición elegida y Reproducir lo reanuda. Cielo azul se activa por separado;
+con el sol encendido también muestra el amanecer y el atardecer.
 
-Las distancias siguen las unidades del JSON y el tiempo es una estimación a pie.
-Una maqueta que no está calibrada a metros reales no ofrece distancias reales.
+Los mapas se actualizan solo cuando cambia la dirección solar. Al pausar el
+sol puedes mover la cámara sin recalcularlos. En móvil se limita el dibujo a
+30 fotogramas por segundo; en escritorio a 60. La pestaña oculta se pausa.
+Hay un mapa para objetos opacos y otro solo si hay objetos transparentes,
+en lugar de almacenar 49 mapas. La geometría de sombra reutiliza los vértices
+originales. No se envía el JSON a un servidor ni se necesita un CDN.
 
-COMPATIBILIDAD Y VALIDACIÓN
+LÍMITES Y VERIFICACIÓN
 
-Se reutiliza la biblioteca original de props de IzayTO/Map-desing, conservando sus
-geometrías y escaleras paramétricas. No se reemplaza un prop desconocido por un cubo:
-la importación avisa y conserva la maqueta anterior.
-Formatos admitidos: resort-map-builder, versiones 1 a 6. Máximo: JSON de 40 MB,
-10 000 objetos, 10 000 nodos y 30 000 conexiones. El rendimiento depende del equipo.
+Es una simulación de luz direccional con sombras filtradas, no ray tracing
+físico. Las transparencias conservan su opacidad visual. Su sombra usa la
+transmisión del obstáculo translúcido más próximo y la oclusión opaca; varias
+capas transparentes superpuestas son una aproximación. No hay refracción ni
+rebotes completos de luz. Geometrías exactamente superpuestas en el archivo
+pueden necesitar corregirse en el diseñador.
 
-Comprobado: los 58 objetos reales, transforms y opacidades, el catálogo completo,
-rutas estándar/rápidas/cubiertas, regreso y límites del camino, dirección relativa
-a la mirada, duración y retorno del sol, detección de cubiertas y archivos inválidos.
-Se revisaron los controles en escritorio y en un marco móvil de 390 × 844.
-Los shaders de material, cielo y profundidad compilaron y enlazaron con Mesa/EGL.
+Se verificaron mediante pruebas de código: importación de los 58 objetos
+originales sin alterar transformaciones, catálogo de props, rutas, regreso,
+dirección relativa, control solar y continuidad de la cámara de sombras por
+el mediodía, recuperación de W/S tras las barras y foco en campos editables.
 
-LIMITACIÓN DE LA REVISIÓN: el navegador de pruebas tenía WebGL desactivado.
-La revisión de interfaz usó un sustituto del renderizador exclusivamente de prueba;
-ese sustituto NO se incluye aquí. No se pudo probar el renderizado WebGL completo
-en Safari/iPhone real, ni medir su fluidez. La prueba en tu dispositivo sigue pendiente.
+Los shaders reales de material, profundidad y cielo se compilaron y enlazaron
+con OpenGL/Mesa. Se renderizaron la maqueta de ejemplo y la importada para
+revisar las franjas de autosombreado, sombras, amanecer, atardecer y primera
+persona. Es una comprobación de los shaders y geometrías, no una prueba completa
+del navegador. El entorno no permitió abrir la copia local en el navegador de
+pruebas. No se ha medido la fluidez en un iPhone físico ni en Safari real.
 
-ARCHIVOS
+ARCHIVOS PRINCIPALES
 
-index.html              Interfaz y punto de entrada.
-styles.css              Diseño y adaptación a móvil.
-js/app.js               Conexión de controles y estados.
-js/viewer.js            Geometría, cámara y plano sin cuadrícula.
-js/renderer.js          Inicio de WebGL.
-js/lighting.js          Sol, cielo y caché de sombras.
-js/data.js              Lectura y validación de exportaciones.
-js/props.js             Geometría original del constructor.
-js/routing.js           Búsqueda de caminos.
-js/shade.js             Análisis de sombra de los caminos.
-js/route-visual.js      Dibujo progresivo de la ruta y flechas.
-js/walk.js              Recorrido en primera persona.
-js/math.js, js/icons.js Utilidades de cálculo e iconos.
-data/resort.json        Tu maqueta inicial, sin imagen de referencia.
-data/demo.json          Ejemplo separado con caminos y cubiertas.
-vendor/                 Three.js 0.160.1, OrbitControls y fuente Outfit.
+index.html          Interfaz.
+styles.css          Diseño conservado y adaptación a móvil.
+app.js           Estado y controles.
+viewer.js        Geometría, cámara y suelo.
+lighting.js      Movimiento solar y coordinación de iluminación.
+shadows.js       Proyección continua y filtrado de sombras.
+atmosphere.js    Cielo, horizonte, amanecer y atardecer.
+walk.js          Primera persona y teclado/joystick.
+route-visual.js  Dibujo progresivo y flechas.
+shade.js         Índice de cobertura de rutas.
+routing.js       Elección de recorridos.
+data.js          Importación y estado vacío.
+props.js         Biblioteca original de geometría del constructor.
+demo.json     Ejemplo opcional Jardines del Mar.
+three.module.js, OrbitControls.js, outfit-latin.woff2 y sus licencias incluidos.
 
-REFERENCIAS
+Formato compatible: resort-map-builder, versiones 1 a 6. Máximos: JSON de
+40 MB, 10 000 objetos, 10 000 nodos y 30 000 conexiones. El rendimiento real
+depende de la geometría y el equipo, no solo del número de objetos.
 
-Diseño inspirado en las referencias que compartiste:
-https://www.iberostar.com/mx/
-https://www.iberostar.com/mx/agentes-de-viajes/
-
-Constructor de origen:
-https://github.com/IzayTO/Map-desing
-Commit consultado: 0932beb6bb0880b509f2d0652a527022b8b22235
-
-Prototipo independiente. No es un sitio oficial de Iberostar ni de Universal.
-Las licencias de Three.js y Outfit se incluyen en vendor.
-
-Guía oficial de publicación en GitHub Pages:
-https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+Prototipo independiente inspirado en Iberostar; no es un sitio oficial.
+La biblioteca de props procede de IzayTO/Map-desing, conservando su geometría.
