@@ -1,0 +1,1085 @@
+{
+  "schema": "resort-map-builder",
+  "version": 6,
+  "name": "Jardines del Mar · Ejemplo",
+  "editor": {
+    "name": "Resort Explorer demo",
+    "units": "meters"
+  },
+  "objects": [
+    {
+      "id": "demo-0",
+      "editorType": "building",
+      "propType": null,
+      "name": "Pabellón",
+      "position": [
+        -13,
+        2.4,
+        -13
+      ],
+      "scale": [
+        7,
+        4.8,
+        7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-1",
+      "editorType": "building",
+      "propType": null,
+      "name": "Pabellón",
+      "position": [
+        0,
+        2.4,
+        -13
+      ],
+      "scale": [
+        7,
+        4.8,
+        7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-2",
+      "editorType": "building",
+      "propType": null,
+      "name": "Pabellón",
+      "position": [
+        13,
+        2.4,
+        -13
+      ],
+      "scale": [
+        7,
+        4.8,
+        7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-3",
+      "editorType": "building",
+      "propType": null,
+      "name": "Habitaciones",
+      "position": [
+        -13,
+        2.1,
+        15
+      ],
+      "scale": [
+        7,
+        4.2,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-4",
+      "editorType": "building",
+      "propType": null,
+      "name": "Habitaciones",
+      "position": [
+        0,
+        2.1,
+        15
+      ],
+      "scale": [
+        7,
+        4.2,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-5",
+      "editorType": "building",
+      "propType": null,
+      "name": "Habitaciones",
+      "position": [
+        13,
+        2.1,
+        15
+      ],
+      "scale": [
+        7,
+        4.2,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-6",
+      "editorType": "prop",
+      "propType": "water",
+      "name": "Piscina",
+      "position": [
+        0,
+        0,
+        -0.5
+      ],
+      "scale": [
+        4.2,
+        1,
+        1.4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-7",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        -21,
+        0,
+        -12
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-8",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        -21,
+        0,
+        14
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-9",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        21,
+        0,
+        -12
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-10",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        21,
+        0,
+        14
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-11",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        -6,
+        0,
+        -11
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-12",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        6,
+        0,
+        -11
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-13",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        -6,
+        0,
+        15
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-14",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        6,
+        0,
+        15
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-15",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        -6,
+        0,
+        1
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-16",
+      "editorType": "prop",
+      "propType": "palm",
+      "name": "Palmera",
+      "position": [
+        6,
+        0,
+        1
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-17",
+      "editorType": "building",
+      "propType": null,
+      "name": "Paseo",
+      "position": [
+        0,
+        0.025,
+        8
+      ],
+      "scale": [
+        36,
+        0.05,
+        1.3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-18",
+      "editorType": "building",
+      "propType": null,
+      "name": "Paseo",
+      "position": [
+        0,
+        0.025,
+        6
+      ],
+      "scale": [
+        36,
+        0.05,
+        1.3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-19",
+      "editorType": "building",
+      "propType": null,
+      "name": "Paseo cubierto",
+      "position": [
+        -18,
+        0.025,
+        1
+      ],
+      "scale": [
+        1.5,
+        0.05,
+        14
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-20",
+      "editorType": "building",
+      "propType": null,
+      "name": "Cubierta",
+      "position": [
+        -18,
+        3.3,
+        1
+      ],
+      "scale": [
+        2.4,
+        0.18,
+        16
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-21",
+      "editorType": "building",
+      "propType": null,
+      "name": "Paseo cubierto",
+      "position": [
+        18,
+        0.025,
+        1
+      ],
+      "scale": [
+        1.5,
+        0.05,
+        14
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-22",
+      "editorType": "building",
+      "propType": null,
+      "name": "Cubierta",
+      "position": [
+        18,
+        3.3,
+        1
+      ],
+      "scale": [
+        2.4,
+        0.18,
+        16
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-23",
+      "editorType": "building",
+      "propType": null,
+      "name": "Paseo cubierto",
+      "position": [
+        0,
+        0.025,
+        -6
+      ],
+      "scale": [
+        36,
+        0.05,
+        1.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-24",
+      "editorType": "building",
+      "propType": null,
+      "name": "Cubierta",
+      "position": [
+        0,
+        3.3,
+        -6
+      ],
+      "scale": [
+        38,
+        0.18,
+        2.4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-25",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -18,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-26",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -12,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-27",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -6,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-28",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        0,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-29",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        6,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-30",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        12,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-31",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        18,
+        1.6,
+        -6.9
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-32",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -17.1,
+        1.6,
+        -3
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-33",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -17.1,
+        1.6,
+        3
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-34",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        -17.1,
+        1.6,
+        8
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-35",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        18.9,
+        1.6,
+        -3
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-36",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        18.9,
+        1.6,
+        3
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-37",
+      "editorType": "building",
+      "propType": null,
+      "name": "Columna",
+      "position": [
+        18.9,
+        1.6,
+        8
+      ],
+      "scale": [
+        0.2,
+        3.2,
+        0.2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-38",
+      "editorType": "building",
+      "propType": null,
+      "name": "Conexión",
+      "position": [
+        -10,
+        0.025,
+        7
+      ],
+      "scale": [
+        1.3,
+        0.05,
+        2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    },
+    {
+      "id": "demo-39",
+      "editorType": "building",
+      "propType": null,
+      "name": "Conexión",
+      "position": [
+        10,
+        0.025,
+        7
+      ],
+      "scale": [
+        1.3,
+        0.05,
+        2
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 1
+    }
+  ],
+  "places": [
+    {
+      "id": "p-lobby",
+      "name": "Lobby",
+      "position": [
+        -18,
+        0,
+        8
+      ],
+      "routeNodeId": "lobby"
+    },
+    {
+      "id": "p-beach",
+      "name": "Club de playa",
+      "position": [
+        18,
+        0,
+        8
+      ],
+      "routeNodeId": "beach"
+    },
+    {
+      "id": "p-pool-a",
+      "name": "Acceso piscina oeste",
+      "position": [
+        -10,
+        0,
+        6
+      ],
+      "routeNodeId": "pool-a"
+    },
+    {
+      "id": "p-roof-a",
+      "name": "Galería oeste",
+      "position": [
+        -18,
+        0,
+        -6
+      ],
+      "routeNodeId": "roof-a"
+    }
+  ],
+  "routeNetwork": {
+    "nodes": [
+      {
+        "id": "lobby",
+        "name": "Lobby",
+        "position": [
+          -18,
+          0,
+          8
+        ]
+      },
+      {
+        "id": "a",
+        "name": "Jardín oeste",
+        "position": [
+          -10,
+          0,
+          8
+        ]
+      },
+      {
+        "id": "b",
+        "name": "Jardín este",
+        "position": [
+          10,
+          0,
+          8
+        ]
+      },
+      {
+        "id": "beach",
+        "name": "Club de playa",
+        "position": [
+          18,
+          0,
+          8
+        ]
+      },
+      {
+        "id": "pool-a",
+        "name": "Acceso piscina oeste",
+        "position": [
+          -10,
+          0,
+          6
+        ]
+      },
+      {
+        "id": "pool-b",
+        "name": "Acceso piscina este",
+        "position": [
+          10,
+          0,
+          6
+        ]
+      },
+      {
+        "id": "roof-a",
+        "name": "Galería oeste",
+        "position": [
+          -18,
+          0,
+          -6
+        ]
+      },
+      {
+        "id": "roof-b",
+        "name": "Galería este",
+        "position": [
+          18,
+          0,
+          -6
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "e0",
+        "a": "lobby",
+        "b": "a",
+        "routeId": "main",
+        "covered": false
+      },
+      {
+        "id": "e1",
+        "a": "a",
+        "b": "b",
+        "routeId": null,
+        "covered": false
+      },
+      {
+        "id": "e2",
+        "a": "b",
+        "b": "beach",
+        "routeId": "main",
+        "covered": false
+      },
+      {
+        "id": "e3",
+        "a": "a",
+        "b": "pool-a",
+        "routeId": "main",
+        "covered": false
+      },
+      {
+        "id": "e4",
+        "a": "pool-a",
+        "b": "pool-b",
+        "routeId": "main",
+        "covered": false
+      },
+      {
+        "id": "e5",
+        "a": "pool-b",
+        "b": "b",
+        "routeId": "main",
+        "covered": false
+      },
+      {
+        "id": "e6",
+        "a": "lobby",
+        "b": "roof-a",
+        "routeId": "roof",
+        "covered": true
+      },
+      {
+        "id": "e7",
+        "a": "roof-a",
+        "b": "roof-b",
+        "routeId": "roof",
+        "covered": true
+      },
+      {
+        "id": "e8",
+        "a": "roof-b",
+        "b": "beach",
+        "routeId": "roof",
+        "covered": true
+      }
+    ],
+    "routes": [
+      {
+        "id": "main",
+        "name": "Paseo de la piscina"
+      },
+      {
+        "id": "roof",
+        "name": "Galería cubierta",
+        "covered": true
+      }
+    ]
+  }
+}
