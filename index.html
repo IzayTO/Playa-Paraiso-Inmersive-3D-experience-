@@ -7,8 +7,8 @@
   <meta name="description" content="Explora tu maqueta de Playa Paraíso en 3D, descubre sus rutas y recórrela bajo la luz del sol.">
   <title>Paraíso · Resort Explorer</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23003c51'/%3E%3Cpath d='m16 4 3 8 9 1-7 6 2 9-7-5-7 5 2-9-7-6 9-1z' fill='%239ae2df'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <link rel="stylesheet" href="./styles.css?v=1.1-flat">
+  <script type="importmap">{"imports":{"three":"./three.module.js"}}</script>
 </head>
 <body>
   <header class="topbar">
@@ -40,7 +40,7 @@
           </div></fieldset>
           <button id="showRoute" class="button primary" type="submit"><span>Mostrar ruta</span><i data-icon="arrow-right"></i></button>
         </form>
-        <div id="emptyRoutes" class="empty-routes" hidden><i data-icon="route"></i><p>Esta maqueta aún no tiene rutas.<span>Guárdalas en el diseñador y vuelve a cargar el archivo.</span></p></div>
+        <div id="emptyRoutes" class="empty-routes" hidden><i data-icon="route"></i><p><b id="emptyRouteMessage">Carga tu maqueta para comenzar.</b><span id="emptyRouteHint">Usa Cargar maqueta o explora el ejemplo de abajo.</span></p></div>
         <div id="routeResult" class="route-result" hidden><div><span id="routeName" class="route-name"></span><button id="clearRoute" class="text-button" title="Quitar ruta">Quitar</button></div><div class="route-stats"><strong id="routeDistance"></strong><span id="routeTime"></span><span id="routeShade"></span></div><p id="routeNote"></p><button id="walkButton" class="button walk-button"><i data-icon="walk"></i>Recorrer en primera persona<i data-icon="arrow-right"></i></button></div>
         <button id="demoButton" class="demo-button"><span>Probar una maqueta con rutas</span><i data-icon="arrow-up-right"></i></button>
       </div>
@@ -89,6 +89,6 @@
   </main>
   <dialog id="helpDialog"><button id="closeHelp" class="icon-button close-dialog" aria-label="Cerrar ayuda"><i data-icon="close"></i></button><p class="eyebrow">HAZLO A TU RITMO</p><h2>Explora Paraíso</h2><div class="help-grid"><article><i data-icon="hand"></i><h3>La maqueta, en tus manos</h3><p>Un dedo gira la vista. Dos dedos desplazan y pellizcan para acercar. En computadora: arrastra para girar, usa el botón derecho para desplazar y la rueda para acercar.</p></article><article><i data-icon="sun"></i><h3>Encuentra tu luz</h3><p>Activa el sol para preparar sus sombras. Después puedes reproducir su recorrido, cambiar su duración o fijar una posición. El cielo azul se activa por separado.</p></article><article><i data-icon="walk"></i><h3>Un camino a tu medida</h3><p>Elige una ruta para entrar en primera persona. Avanza o vuelve por el mismo camino con W y S, las flechas o el joystick. Arrastra la vista para mirar en cualquier dirección.</p></article><article><i data-icon="upload"></i><h3>Tu propia maqueta</h3><p>Carga el JSON de Wizard Map Design. Se conservan los objetos, su geometría y las rutas. La imagen de referencia, la cuadrícula y las herramientas del editor no se muestran.</p></article></div><p class="help-note">Prototipo independiente inspirado en Iberostar. Las distancias siguen las unidades del archivo; la luz y las sombras son una simulación visual.</p></dialog>
   <noscript>Activa JavaScript para abrir el visor tridimensional.</noscript>
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./app.js?v=1.1-flat"></script>
 </body>
 </html>
