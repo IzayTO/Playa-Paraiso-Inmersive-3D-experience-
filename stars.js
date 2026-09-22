@@ -11,14 +11,86 @@ export function createStarGeometry(count=1400,seed=82147){
   let state=seed>>>0;
   const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
   const positions=[],sizes=[],brightness=[],colors=[];
+
+  // Campo estelar base: conserva el aspecto original, con un poco más de presencia.
   for(let i=0;i<count;i++){
     const y=.018+random()*.982,phi=random()*Math.PI*2,r=Math.sqrt(1-y*y);
     positions.push(Math.cos(phi)*r,y,Math.sin(phi)*r);
-    const light=.14+Math.pow(random(),4)*.86,tint=random();
-    brightness.push(light);sizes.push(1.6+light*2.1);
-    // Mostly neutral, with a few warmer and cooler stars.
+    const light=.17+Math.pow(random(),3.7)*.83,tint=random();
+    brightness.push(light);sizes.push(1.65+light*2.25);
     const color=tint<.18?[1,.86,.73]:tint>.73?[.76,.86,1]:[.94,.96,1];colors.push(...color);
   }
+
+  // Vía Láctea procedural y tenue.
+  // No usa textura ni una banda uniforme: alterna densidad, huecos,
+  // una franja oscura central y pequeños sectores más ricos.
+  const milkyCount=Math.round(count*1.45);
+  const galacticNormal=new THREE.Vector3(.34,.56,-.755).normalize();
+  const axisHint=Math.abs(galacticNormal.y)>.9
+    ?new THREE.Vector3(1,0,0)
+    :new THREE.Vector3(0,1,0);
+  const galacticU=new THREE.Vector3().crossVectors(galacticNormal,axisHint).normalize();
+  const galacticV=new THREE.Vector3().crossVectors(galacticNormal,galacticU).normalize();
+  const direction=new THREE.Vector3();
+  const galacticCenter=4.82;
+  let added=0,attempts=0;
+
+  while(added<milkyCount&&attempts<milkyCount*12){
+    attempts++;
+    const theta=random()*Math.PI*2;
+
+    // Distribución aproximadamente gaussiana alrededor del plano galáctico.
+    const latitude=(random()+random()+random()+random()+random()+random()-3)*.072;
+    const cosB=Math.cos(latitude),sinB=Math.sin(latitude);
+    direction.set(0,0,0)
+      .addScaledVector(galacticU,Math.cos(theta)*cosB)
+      .addScaledVector(galacticV,Math.sin(theta)*cosB)
+      .addScaledVector(galacticNormal,sinB)
+      .normalize();
+
+    if(direction.y<.02)continue;
+
+    // Estructura irregular para evitar una línea artificial.
+    const structure=THREE.MathUtils.clamp(
+      .48+
+      .18*Math.sin(theta*3.17+.8)+
+      .13*Math.sin(theta*7.31+2.2)+
+      .08*Math.sin(theta*12.73-1.1),
+      .12,.86
+    );
+
+    const delta=Math.atan2(
+      Math.sin(theta-galacticCenter),
+      Math.cos(theta-galacticCenter)
+    );
+    const bulge=Math.exp(-(delta*delta)/(2*.42*.42));
+
+    const keepChance=THREE.MathUtils.clamp(.34+structure*.43+bulge*.16,.22,.88);
+    if(random()>keepChance)continue;
+
+    // Carril de polvo: el centro queda parcialmente vacío y más oscuro.
+    const lane=Math.abs(latitude);
+    if(lane<.018&&random()<.64)continue;
+    if(lane<.038&&random()<.28)continue;
+
+    let light=.028+Math.pow(random(),2.0)*(.055+structure*.09+bulge*.12);
+    if(lane<.055)light*=.60+.40*smooth(.018,.055,lane);
+    light=THREE.MathUtils.clamp(light,.018,.27);
+
+    positions.push(direction.x,direction.y,direction.z);
+    brightness.push(light);
+    sizes.push(.75+light*4.1+random()*.42);
+
+    const tint=random();
+    const color=bulge>.35&&tint<.34
+      ?[1,.88,.74]
+      :tint>.78
+        ?[.73,.84,1]
+        :[.91,.94,1];
+    colors.push(...color);
+    added++;
+  }
+
   const geometry=new THREE.BufferGeometry();
   geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
   geometry.setAttribute('starSize',new THREE.Float32BufferAttribute(sizes,1));
@@ -44,7 +116,7 @@ export class Stars {
           vec2 sunAzimuth=sunDirection.xz/max(length(sunDirection.xz),.001);
           float away=clamp(.5-.5*dot(direction.xz,sunAzimuth),0.0,1.0);
           float heightFade=smoothstep(.03,.25,direction.y);
-          vStarAlpha=visibility*starBrightness*heightFade*(.20+.80*away)*.84;
+          vStarAlpha=visibility*starBrightness*heightFade*(.24+.76*away)*1.06;
           vStarColor=starColor;
         }`,
       fragmentShader:`varying vec3 vStarColor;varying float vStarAlpha;
