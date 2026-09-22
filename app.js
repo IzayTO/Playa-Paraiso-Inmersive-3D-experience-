@@ -1,17 +1,23 @@
-import {Viewer,knownProps} from './viewer.js?v=1.3';
-import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.3';
-import {getDestinations,findRoute} from './routing.js?v=1.3';
-import {ShadeIndex} from './shade.js?v=1.3';
-import {RouteVisual} from './route-visual.js?v=1.3';
-import {WalkController} from './walk.js?v=1.3';
-import {installIcons} from './icons.js?v=1.3';
-import {protectViewerGestures} from './interaction.js?v=1.3';
-import {ExplorerUI} from './explorer-ui.js?v=1.3';
-import {routeFromLocation,nearestNetworkPoint} from './network-walk.js?v=1.3';
+import {Viewer,knownProps} from './viewer.js?v=1.4';
+import {parseProject,readProjectFile,emptyProject} from './data.js?v=1.4';
+import {getDestinations,findRoute} from './routing.js?v=1.4';
+import {ShadeIndex} from './shade.js?v=1.4';
+import {RouteVisual} from './route-visual.js?v=1.4';
+import {WalkController} from './walk.js?v=1.4';
+import {installIcons} from './icons.js?v=1.4';
+import {protectViewerGestures} from './interaction.js?v=1.4';
+import {ExplorerUI} from './explorer-ui.js?v=1.4';
+import {routeFromLocation,nearestNetworkPoint} from './network-walk.js?v=1.4';
+import {prepareConnectedNetwork} from './network-topology.js?v=1.4';
+import {Arrival} from './arrival.js?v=1.4';
+import {JourneyUI} from './journey-ui.js?v=1.4';
 
 const $=id=>document.getElementById(id);
 installIcons();
-let viewer,walk,routeVisual,shade,explorer,project,userProject,demoProject,isDemo=false,selectedRoute=null,destinations=[],operation=0,busy=false,toastTimer;
+let viewer,walk,routeVisual,shade,explorer,journey,arrival,project,userProject,demoProject,isDemo=false,selectedRoute=null,destinations=[],specialOrigin=null,operation=0,busy=false,toastTimer;
+const currentOrigin=()=>specialOrigin?.id===$('fromSelect').value?specialOrigin:destinations.find(d=>d.id===$('fromSelect').value);
+const interactionBusy=()=>busy||!!document.querySelector('dialog[open]');
+function setOrigin(origin,clear=true){specialOrigin=destinations.some(d=>d.id===origin.id)?null:origin;fillDestinations();$('fromSelect').value=origin.id;if(clear)clearRoute();}
 const formatNumber=n=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:1}).format(n);
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,6000);}
 function loading(show,title='Un momento en Paraíso',detail='Cargando la maqueta…',cancellable=false){busy=show;if(walk){walk.suspended=show||$('helpDialog').open;if(show)walk.resetInput();}$('loading').hidden=!show;$('loadingTitle').textContent=title;$('loadingDetail').textContent=detail;$('loadingProgress').value=0;$('cancelBake').hidden=!cancellable;$('importButton').disabled=show;}
@@ -20,10 +26,12 @@ function clearRoute(){selectedRoute=null;routeVisual?.clear();explorer?.setDesti
 function hideLookHint(){$('lookHint').classList.remove('is-visible');$('lookHint').setAttribute('aria-hidden','true');}
 function closeWalk(){walk?.stop();hideLookHint();$('workspace').classList.remove('is-walking');$('walkHUD').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');explorer?.walkStopped();viewer.dirty=true;}
 function fillDestinations(){
-  destinations=getDestinations(project);
+  const oldFrom=$('fromSelect').value,oldTo=$('toSelect').value;destinations=getDestinations(project);
   for(const select of [$('fromSelect'),$('toSelect')]){select.replaceChildren();for(const dest of destinations)select.append(new Option(dest.name,dest.id));}
-  if(destinations.length>1)$('toSelect').value=destinations[1].id;
-  const ready=destinations.length>=2;
+  if(specialOrigin)$('fromSelect').prepend(new Option(specialOrigin.name,specialOrigin.id));
+  if([...$('fromSelect').options].some(o=>o.value===oldFrom))$('fromSelect').value=oldFrom;
+  if(destinations.some(d=>d.id===oldTo))$('toSelect').value=oldTo;else if(destinations.length>1)$('toSelect').value=destinations[1].id;
+  const ready=destinations.length>0&&(destinations.length>=2||!!specialOrigin);
   $('routeForm').hidden=!ready;$('emptyRoutes').hidden=ready;$('showRoute').disabled=!ready;
   $('modelInfo').textContent=`${project.objects.length} objetos · ${project.network.routes.length ? project.network.routes.length+' rutas' : project.network.edges.length ? 'Caminos conectados':'Sin rutas'}`;
   const hasModel=project.objects.length>0;
@@ -36,9 +44,10 @@ async function useProject(next,demo=false){
   const ticket=++operation;
   loading(true,'Preparando tu maqueta','Conservando la geometría y sus transparencias…');
   await new Promise(r=>requestAnimationFrame(r));
+  next.network=await prepareConnectedNetwork(next.network,p=>{$('loadingProgress').value=p;$('loadingDetail').textContent='Conectando los cruces de tus caminos…';});
   // Build first, so a malformed import never destroys the current model.
   const model=viewer.buildModel(next);if(ticket!==operation)return;
-  if(walk.active)closeWalk();clearRoute();shade.invalidate();viewer.setModel(model);project=next;isDemo=demo;
+  if(walk.active)closeWalk();clearRoute();shade.invalidate();viewer.setModel(model);project=next;isDemo=demo;specialOrigin=null;
   if(!demo)userProject=next;
   $('sunEnabled').checked=false;$('sunControls').hidden=true;$('skyEnabled').checked=false;viewer.lighting.setSky(false);$('workspace').classList.remove('is-sky');
   const hasModel=next.objects.length>0;
@@ -46,7 +55,7 @@ async function useProject(next,demo=false){
   $('modelTitle').textContent=demo?'Jardines del Mar':hasModel?next.name.split(' · ').at(-1):'Tu próxima perspectiva';
   $('modelSubtitle').textContent=demo?'Descubre sus caminos y recórrelos a tu ritmo.':hasModel?'Tu maqueta, desde otra perspectiva.':'Carga tu maqueta y descubre cada camino.';
   $('demoButton').querySelector('span').textContent=demo?(userProject?.objects.length?'Volver a mi maqueta':'Cerrar maqueta de ejemplo'):'Probar una maqueta con rutas';
-  fillDestinations();explorer?.setProject(project);updateLightUI();viewer.renderer.compile(viewer.scene,viewer.camera);viewer.render();$('loadingProgress').value=1;
+  fillDestinations();explorer?.setProject(project);journey?.setProject(project);updateLightUI();viewer.renderer.compile(viewer.scene,viewer.camera);viewer.render();$('loadingProgress').value=1;
   loading(false);if(window.innerWidth<=760)collapsePanel(true);
 }
 function currentMode(){return document.querySelector('input[name=routeMode]:checked').value;}
@@ -73,10 +82,10 @@ async function goToPlace(place){
     applyRoute(route,from,to);startWalk();toast(`Continúa desde aquí hacia ${to.name}.`);
   }catch(error){loading(false);if(error.name!=='AbortError')toast(error.message);}
 }
-function startFree(){
+function startFree(locationOverride=null){
   if(busy||!project.network.edges.length)return;
   try{
-    const origin=destinations.find(d=>d.id===$('fromSelect').value),start=walk.active?walk.location(project.network):nearestNetworkPoint(project.network,origin?.accessPosition||origin?.position||project.network.nodes[0].position);
+    const origin=currentOrigin(),start=locationOverride|| (walk.active?walk.location(project.network):origin?.location||nearestNetworkPoint(project.network,origin?.accessPosition||origin?.position||project.network.nodes[0].position));
     walk.startFree(project.network,start);clearRoute();$('workspace').classList.add('is-walking');$('walkHUD').hidden=false;$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');collapsePanel(true);
     $('walkDestination').textContent='EXPLORACIÓN LIBRE';explorer.walkStarted();walk.update(0);showLookHint();
     toast('Explora los caminos conectados. En los cruces podrás elegir hacia dónde seguir.');
@@ -84,13 +93,13 @@ function startFree(){
 }
 async function showRoute(){
   if(busy)return;
-  const from=destinations.find(d=>d.id===$('fromSelect').value),to=destinations.find(d=>d.id===$('toSelect').value);if(!from||!to){toast('Elige un punto de partida y un destino.');return;}
+  const from=currentOrigin(),to=destinations.find(d=>d.id===$('toSelect').value);if(!from||!to){toast('Elige un punto de partida y un destino.');return;}
   const ticket=operation,mode=currentMode();
   try{
-    if(from.nodeId===to.nodeId)throw new Error('Esos dos lugares comparten el mismo acceso. Elige otro destino.');
+    if(!from.location&&from.nodeId===to.nodeId)throw new Error('Esos dos lugares comparten el mismo acceso. Elige otro destino.');
     if(mode==='shade'&&!shade.cache){loading(true,'Encontrando el mejor camino','Comprobando la luz y las zonas cubiertas…');await shade.prepare(project.network,viewer.lighting.path,p=>$('loadingProgress').value=p);loading(false);}
     if(ticket!==operation)return;
-    const route=findRoute(project.network,from.nodeId,to.nodeId,mode,shade.scores(viewer.lighting.position));
+    const route=from.location?routeFromLocation(project.network,from.location,to.nodeId,mode,shade.scores(viewer.lighting.position)):findRoute(project.network,from.nodeId,to.nodeId,mode,shade.scores(viewer.lighting.position));
     applyRoute(route,from,to);
     // Showing a route never changes the user's framing; centering is explicit.
     if(window.innerWidth<=760)collapsePanel(true);
@@ -137,11 +146,11 @@ function wireUI(){
   $('fileInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const next=await readProjectFile(file,knownProps);await useProject(next);toast('Tu maqueta está lista.');}catch(error){loading(false);toast(error.message);}finally{e.target.value='';}});
   $('demoButton').addEventListener('click',async()=>{if(busy)return;try{if(isDemo)await useProject(userProject,false);else{if(!demoProject){const response=await fetch('./demo.json');if(!response.ok)throw new Error('No se pudo abrir el ejemplo.');demoProject=parseProject(await response.json(),knownProps);}await useProject(demoProject,true);}}catch(error){loading(false);toast(error.message);}});
   $('routeForm').addEventListener('submit',e=>{e.preventDefault();showRoute();});
-  $('swapPlaces').addEventListener('click',()=>{const old=$('fromSelect').value;$('fromSelect').value=$('toSelect').value;$('toSelect').value=old;clearRoute();});
+  $('swapPlaces').addEventListener('click',()=>{const old=$('fromSelect').value;if(!destinations.some(d=>d.id===old)){toast('El origen señalado es un acceso. Elige un lugar en Desde para intercambiarlo.');return;}$('fromSelect').value=$('toSelect').value;$('toSelect').value=old;clearRoute();});
   for(const id of ['fromSelect','toSelect'])$(id).addEventListener('change',clearRoute);
   document.querySelectorAll('input[name=routeMode]').forEach(el=>el.addEventListener('change',clearRoute));
   $('clearRoute').addEventListener('click',clearRoute);$('walkButton').addEventListener('click',startWalk);$('mobileWalkButton').addEventListener('click',startWalk);$('exitWalk').addEventListener('click',closeWalk);
-  $('centerButton').addEventListener('click',()=>viewer.frame('aerial'));
+  $('centerButton').addEventListener('click',()=>{journey.remember();if(!journey.applyHome(true,false))viewer.frame('aerial');});
   $('viewButton').addEventListener('click',()=>$('viewMenu').hidden=!$('viewMenu').hidden);
   document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>{viewer.frame(button.dataset.view==='route'?'aerial':button.dataset.view,true,button.dataset.view==='route'?routeVisual.bounds:undefined);$('viewMenu').hidden=true;}));
   $('zoomIn').addEventListener('click',()=>viewer.zoom(.8));$('zoomOut').addEventListener('click',()=>viewer.zoom(1.25));
@@ -169,7 +178,7 @@ function wireUI(){
   $('helpButton').addEventListener('click',()=>{walk.resetInput();walk.suspended=true;$('helpDialog').showModal();});$('closeHelp').addEventListener('click',()=>$('helpDialog').close());
   $('helpDialog').addEventListener('close',()=>{walk.suspended=busy;if(walk.active)viewer.container.focus({preventScroll:true});});
   $('helpDialog').addEventListener('click',e=>{if(e.target===$('helpDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
-  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!$('helpDialog').open&&!$('placeEditor').open){if(walk.active)closeWalk();explorer.closePlace();$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');}});
+  window.addEventListener('keydown',e=>{if(e.code==='Escape'&&!document.querySelector('dialog[open]')){if(walk.active)closeWalk();explorer.closePlace();$('originMenu').hidden=true;$('layerPanel').hidden=true;$('viewMenu').hidden=true;$('walkSettings').hidden=true;$('walkSettingsButton').setAttribute('aria-expanded','false');}});
   viewer.onContextLost=()=>{viewer.lighting.abort?.abort();loading(true,'La vista se ha pausado','Esperando a que el dispositivo recupere la imagen…');};
   viewer.onContextRestored=()=>{viewer.lighting.invalidate();$('sunEnabled').checked=false;$('sunControls').hidden=true;loading(false);viewer.dirty=true;updateLightUI();toast('La vista se recuperó. Puedes volver a activar el sol.');};
 }
@@ -181,20 +190,26 @@ function registerTools(){
   window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
 async function init(){
+  arrival=new Arrival();await arrival.open();
   viewer=new Viewer($('scene'));shade=new ShadeIndex(viewer);routeVisual=new RouteVisual(viewer);
   walk=new WalkController(viewer,state=>{
     if(state.free){$('directionText').textContent=state.choices.length?'Elige por dónde seguir':state.atEnd?'Final de este camino':state.cue.text;$('walkRemaining').textContent=state.atEnd?'Retrocede para volver al cruce.':`${formatNumber(state.traveled)} m explorados`;}
     else{
-    if(document.activeElement!==$('walkPosition'))$('walkPosition').value=Math.round(state.fraction*1000);
+    routeVisual.setProgress(state.fraction);if(document.activeElement!==$('walkPosition'))$('walkPosition').value=Math.round(state.fraction*1000);
     $('directionText').textContent=state.atEnd?'Llegaste a tu destino':state.cue.text;
     $('directionArrow').style.transform=`rotate(${state.cue.angle*180/Math.PI}deg)`;
     $('walkRemaining').textContent=state.atEnd?'Puedes retroceder para volver.':`${formatNumber(state.remaining)} m para llegar`;
     }
     $('directionArrow').style.transform=`rotate(${state.cue.angle*180/Math.PI}deg)`;explorer?.onWalkState(state);
   });walk.bindJoystick($('joystick'),$('joystickThumb'));walk.onLook=hideLookHint;
-  explorer=new ExplorerUI({viewer,walk,busy:()=>busy,destinations:()=>destinations,route:()=>selectedRoute,origin:()=>destinations.find(d=>d.id===$('fromSelect').value),goTo:goToPlace,startFree,toast,onPlacesChanged:()=>{if(walk.active)closeWalk();clearRoute();fillDestinations();}});
+  explorer=new ExplorerUI({viewer,walk,busy:interactionBusy,destinations:()=>destinations,route:()=>selectedRoute,origin:currentOrigin,goTo:goToPlace,startFree,toast,quickVisit:p=>journey?.quickVisit(p),onPlacesChanged:()=>{if(walk.active)closeWalk();clearRoute();fillDestinations();}});
+  journey=new JourneyUI({viewer,walk,explorer,routeVisual,busy:interactionBusy,destinations:()=>destinations,route:()=>selectedRoute,isDemo:()=>isDemo,setOrigin,closeWalk,startFree,toast,
+    restoreRoute:(route,progress)=>{if(route){setOrigin(route.from,false);$('toSelect').value=route.to.id;applyRoute(route,route.from,route.to);routeVisual.setProgress(progress);}else clearRoute();},
+    restoreWalk:state=>{if(state.free)startFree(state.free.location);else startWalk();walk.restoreState(state);explorer.walkStarted();walk.update(0);}},arrival);
   updateFovUI();protectViewerGestures(()=>walk.resetInput());wireUI();
-  await useProject(emptyProject());registerTools();
+  await useProject(emptyProject());
+  const sharedMap=new URLSearchParams(location.search).get('map');if(['demo','published'].includes(sharedMap)){try{const response=await fetch(sharedMap==='demo'?'./demo.json':'./mapa.json');if(!response.ok)throw new Error('Para abrir la vista compartida, carga la misma maqueta con Cargar maqueta.');const next=parseProject(await response.json(),knownProps);if(sharedMap==='demo')demoProject=next;await useProject(next,sharedMap==='demo');}catch(error){loading(false);toast(error.message);}}
+  registerTools();
   let previous=performance.now(),lastRender=0,lastUI=0;const minFrame=matchMedia('(pointer:coarse)').matches?1000/30:1000/60;
   function frame(time){requestAnimationFrame(frame);const dt=Math.min((time-previous)/1000,.05);previous=time;if(document.hidden||busy)return;viewer.update();viewer.lighting.update(dt);walk.update(dt);const animated=routeVisual.update()||(viewer.lighting.enabled&&viewer.lighting.playing)||!!viewer.transition;
     if((viewer.dirty||animated)&&time-lastRender>=minFrame){explorer.pins.update();viewer.render();lastRender=time;}

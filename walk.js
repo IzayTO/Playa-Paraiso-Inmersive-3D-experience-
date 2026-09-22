@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {clamp,pointOnPath,directionCue} from './math.js?v=1.3';
-import {NetworkWalker,nearestNetworkPoint} from './network-walk.js?v=1.3';
+import {clamp,pointOnPath,directionCue} from './math.js?v=1.4';
+import {NetworkWalker,nearestNetworkPoint} from './network-walk.js?v=1.4';
 export class WalkController {
   constructor(viewer,onChange){
     this.viewer=viewer;this.onChange=onChange;this.active=false;this.keys=new Set();this.joy={x:0,y:0};this.drag=null;this.position=0;this.eye=.35;this.yaw=0;this.pitch=0;this.fov=100;this.speed=1;this.role='editor';this.joystickPointer=null;this.free=null;
@@ -58,15 +58,20 @@ export class WalkController {
     this.free=free;this.resetInput();this.update(0);
   }
   chooseBranch(edgeId){if(this.free?.choose(edgeId)){this.resetInput();this.update(0);this.focusScene();}}
+  captureState(){if(!this.active)return null;return {route:this.route,position:this.position,yaw:this.yaw,pitch:this.pitch,eye:this.eye,fov:this.fov,speed:this.speed,saved:this.saved,from:this.from,to:this.to,free:this.free?{network:this.free.network,location:this.free.location,trail:this.free.trail.map(s=>({...s})),index:this.free.index,offset:this.free.offset,pending:this.free.pending,totalTravel:this.free.totalTravel}:null};}
+  restoreState(state){this.start(state.route,state.from,state.to);this.saved=state.saved;this.position=state.position;this.yaw=state.yaw;this.pitch=state.pitch;this.eye=this.role==='guest'?this.viewer.baseEyeHeight:state.eye;this.setFov(state.fov);this.setSpeed(state.speed);if(state.free){this.free=new NetworkWalker(state.free.network,state.free.location,state.yaw);for(const key of ['index','offset','pending','totalTravel'])this.free[key]=state.free[key];this.free.trail=state.free.trail.map(s=>({...s}));}this.viewer.camera.near=Math.max(.001,this.eye*.05);this.viewer.camera.updateProjectionMatrix();this.resetInput();this.update(0);}
+  lookToward(point){const p=this.currentPoint,dx=point[0]-p[0],dz=point[2]-p[2];if(Math.hypot(dx,dz)<.001)return;this.resetInput();const yaw=Math.atan2(dx,-dz),delta=Math.atan2(Math.sin(yaw-this.yaw),Math.cos(yaw-this.yaw));this.lookTransition={start:performance.now(),yaw:this.yaw,pitch:this.pitch,delta,targetPitch:0};}
   stop(){
     if(!this.active)return;this.active=false;this.viewer.walking=false;this.resetInput();this.viewer.camera.fov=this.saved.fov;this.viewer.camera.near=this.saved.near;this.viewer.camera.position.copy(this.saved.position);this.viewer.controls.target.copy(this.saved.target);this.viewer.controls.enabled=true;this.viewer.resize();this.viewer.controls.update();
   }
-  resetInput(){this.keys.clear();this.releaseJoystick();const id=this.drag?.id;this.drag=null;const canvas=this.viewer.renderer.domElement;if(id!==undefined&&canvas.hasPointerCapture?.(id))canvas.releasePointerCapture(id);}
+  resetInput(){this.lookTransition=null;this.keys.clear();this.releaseJoystick();const id=this.drag?.id;this.drag=null;const canvas=this.viewer.renderer.domElement;if(id!==undefined&&canvas.hasPointerCapture?.(id))canvas.releasePointerCapture(id);}
   seek(value){if(!this.active||this.free||this.role==='guest')return;this.position=clamp(value,0,1)*this.route.length;this.viewer.dirty=true;this.update(0);}
   update(dt){
     if(!this.active||this.suspended)return false;
     const forward=(this.keys.has('KeyW')||this.keys.has('ArrowUp')?1:0)-(this.keys.has('KeyS')||this.keys.has('ArrowDown')?1:0)+(Math.abs(this.joy.y)>.12?this.joy.y:0);
     const turn=(this.keys.has('KeyD')||this.keys.has('ArrowRight')?1:0)-(this.keys.has('KeyA')||this.keys.has('ArrowLeft')?1:0);
+    if(turn||this.drag)this.lookTransition=null;
+    if(this.lookTransition){const tr=this.lookTransition,t=clamp((performance.now()-tr.start)/650,0,1),s=t*t*(3-2*t);this.yaw=tr.yaw+tr.delta*s;this.pitch=tr.pitch*(1-s);if(t===1)this.lookTransition=null;}
     const step=clamp(forward,-1,1)*dt*this.viewer.baseEyeHeight*1.65*this.speed;
     if(this.free)this.free.move(step);else this.position=clamp(this.position+step,0,this.route.length);this.yaw+=turn*dt*1.3;
     const p=this.currentPoint,floor=this.viewer.floorAt(p,this.eye);

@@ -1,7 +1,7 @@
-import {PlacesView,destinationProjection} from './places-view.js?v=1.3';
-import {Minimap} from './minimap.js?v=1.3';
-import {normalizePlace,PLACE_TYPES,serializeProject} from './data.js?v=1.3';
-import {distance} from './math.js?v=1.3';
+import {PlacesView,destinationProjection} from './places-view.js?v=1.4';
+import {Minimap} from './minimap.js?v=1.4';
+import {normalizePlace,PLACE_TYPES,serializeProject} from './data.js?v=1.4';
+import {distance} from './math.js?v=1.4';
 
 const $=id=>document.getElementById(id),number=n=>new Intl.NumberFormat('es-MX',{maximumFractionDigits:1}).format(n);
 const directionLabel=angle=>Math.abs(angle)<Math.PI/6?'De frente':Math.abs(angle)>Math.PI*5/6?'Detrás':angle>0?'Derecha':'Izquierda';
@@ -45,14 +45,14 @@ export class ExplorerUI {
   endPicking(){this.pins.onPlacePosition=null;$('workspace').classList.remove('is-picking-place');this.viewer.controls.enableRotate=true;this.viewer.controls.enablePan=true;}
   setProject(project){this.project=project;this.destination=null;this.closePlace();this.endPicking();$('editStatus').hidden=true;this.pins.setPlaces(project.places);this.minimap.setProject(project);this.refreshPlaces();$('freeRoamButton').disabled=!project.network.edges.length;$('walkFreeRoam').disabled=!project.network.edges.length;$('exportProject').disabled=!project.objects.length;$('addPlace').disabled=!project.objects.length;this.update();}
   refreshPlaces(){
-    if(!this.project)return;const list=$('placeList');list.replaceChildren();const places=this.project.places.filter(p=>this.role==='editor'||p.visible);$('placeCount').textContent=places.length;
-    for(const place of places){const button=document.createElement('button'),dot=document.createElement('span'),name=document.createElement('span');button.type='button';dot.className='place-dot';dot.style.background=place.color;name.textContent=place.name;button.append(dot,name);if(!place.visible){const hidden=document.createElement('small');hidden.textContent='Oculto';button.append(hidden);}button.addEventListener('click',()=>this.openPlace(place));list.append(button);}
+    if(!this.project)return;const list=$('placeList');list.replaceChildren();const places=this.project.places.filter(p=>(this.role==='editor'||p.visible)&&(!this.placeFilter||this.placeFilter(p)));$('placeCount').textContent=places.length;
+    for(const place of places){const button=document.createElement('button'),dot=document.createElement('span'),name=document.createElement('span');button.type='button';dot.className='place-dot';dot.style.background=place.color;name.textContent=place.name;button.append(dot,name);if(!place.visible){const hidden=document.createElement('small');hidden.textContent='Oculto';button.append(hidden);}button.addEventListener('click',()=>this.api.quickVisit?this.api.quickVisit(place):this.openPlace(place));list.append(button);}
     if(!places.length){const note=document.createElement('p');note.className='micro-copy';note.textContent='Los marcadores de tu archivo aparecerán aquí.';list.append(note);}
   }
   openPlace(place){
     if(this.api.busy())return;this.walk.resetInput();this.selectedPlace=place;$('placeCard').hidden=false;$('placeCard').style.setProperty('--place-color',place.color||'#007f88');$('placeName').textContent=place.name;$('placeCategory').textContent=PLACE_TYPES[place.category]||place.category||'LUGAR';
     for(const [id,value]of [['placeHours',place.hours],['placeDescription',place.description]]){$(id).textContent=value||'';$(id).hidden=!value;}
-    $('goToPlace').disabled=!this.api.destinations().some(p=>p.id===place.id);this.updatePlaceDistance();
+    $('goToPlace').disabled=!this.api.destinations().some(p=>p.id===place.id);$('enterPlace').disabled=!this.project.network.edges.length;this.updatePlaceDistance();
   }
   closePlace(){this.selectedPlace=null;$('placeCard').hidden=true;}
   updatePlaceDistance(){if(!this.selectedPlace)return;const w=this.walk,from=w.active?w.currentPoint:this.api.origin()?.position;
@@ -66,13 +66,13 @@ export class ExplorerUI {
     $('editPlaceCategory').value=p.category;$('editPlaceColor').value=p.color;$('editPlaceHours').value=p.hours;$('editPlaceDescription').value=p.description;
     ['editPlaceX','editPlaceY','editPlaceZ'].forEach((id,i)=>$(id).value=p.position[i]);$('editPlaceVisible').checked=p.visible;
     $('editPlaceAccess').replaceChildren(new Option('Acceso más cercano',''));
-    const connected=new Set(this.project.network.edges.flatMap(e=>[e.a,e.b]));for(const n of this.project.network.nodes){if(connected.has(n.id))$('editPlaceAccess').append(new Option(`${n.name} · X ${number(n.position[0])}, Z ${number(n.position[2])}`,n.id));}
+    const authored=this.project.network.sourceNetwork||this.project.network,connected=new Set(authored.edges.flatMap(e=>[e.a,e.b]));for(const n of authored.nodes){if(connected.has(n.id)&&(n.sourceSection||'root')===(p.sourceSection||'root'))$('editPlaceAccess').append(new Option(`${n.name} · X ${number(n.position[0])}, Z ${number(n.position[2])}`,n.id));}
     $('editPlaceAccess').value=p.routeNodeId||'';$('removePlace').hidden=!place;$('pickPlacePosition').disabled=this.walk.active;$('placeEditor').showModal();
   }
   savePlace(){
     if(this.role!=='editor')return;try{
       const id=this.editing?.id||`place-${globalThis.crypto?.randomUUID?.()||Date.now()}`;
-      const place=normalizePlace({id,name:$('editPlaceName').value,category:$('editPlaceCategory').value,color:$('editPlaceColor').value,hours:$('editPlaceHours').value,description:$('editPlaceDescription').value,position:['editPlaceX','editPlaceY','editPlaceZ'].map(id=>Number($(id).value)),visible:$('editPlaceVisible').checked,routeNodeId:$('editPlaceAccess').value,locked:this.editing?.locked});
+      const place=normalizePlace({...this.editing,id,name:$('editPlaceName').value,category:$('editPlaceCategory').value,color:$('editPlaceColor').value,hours:$('editPlaceHours').value,description:$('editPlaceDescription').value,position:['editPlaceX','editPlaceY','editPlaceZ'].map(id=>Number($(id).value)),visible:$('editPlaceVisible').checked,routeNodeId:$('editPlaceAccess').value,locked:this.editing?.locked});
       const i=this.project.places.findIndex(p=>p.id===id);if(i<0)this.project.places.push(place);else this.project.places[i]=place;this.changed();$('placeEditor').close();this.openPlace(place);this.api.toast('Lugar actualizado. Guarda la maqueta para conservarlo.');
     }catch(error){this.api.toast(error.message);}
   }

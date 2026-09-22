@@ -34,7 +34,7 @@ export class PlacesView {
     }this.viewer.dirty=true;
   }
   update(){const v=this.viewer,h=v.container.clientHeight||600,factor=2*Math.tan(v.camera.fov*Math.PI/360)/h;
-    for(const pin of this.group.children){const d=v.camera.position.distanceTo(pin.position),worldSize=THREE.MathUtils.clamp(d*factor*34,v.baseEyeHeight*.34,v.span*.045);pin.scale.set(worldSize*.8,worldSize,1);}
+    for(const pin of this.group.children){pin.visible=!this.filter||this.filter(pin.userData.place);const d=v.camera.position.distanceTo(pin.position),worldSize=THREE.MathUtils.clamp(d*factor*34,v.baseEyeHeight*.34,v.span*.045);pin.scale.set(worldSize*.8,worldSize,1);}
   }
 }
 

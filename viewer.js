@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {OrbitControls} from './OrbitControls.js';
-import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.3';
-import {Lighting} from './lighting.js?v=1.3';
-import {makeRenderer} from './renderer.js?v=1.3';
-import {buildBridgeMesh} from './path-connections.js?v=1.3';
+import {createProp,updateParametricProp,PROP_CATALOG} from './props.js?v=1.4';
+import {Lighting} from './lighting.js?v=1.4';
+import {makeRenderer} from './renderer.js?v=1.4';
+import {buildBridgeMesh} from './path-connections.js?v=1.4';
 
 export const knownProps=Object.keys(PROP_CATALOG);
 export class Viewer {
@@ -83,8 +83,21 @@ export class Viewer {
     else{this.transition=null;this.camera.position.copy(end);this.controls.target.copy(target);this.controls.update();}
     this.dirty=true;
   }
-  zoom(factor){if(this.walking)return;const offset=this.camera.position.clone().sub(this.controls.target);const length=THREE.MathUtils.clamp(offset.length()*factor,this.controls.minDistance,this.controls.maxDistance);this.camera.position.copy(this.controls.target).add(offset.setLength(length));this.controls.update();this.dirty=true;}
-  update(){if(this.transition){const p=THREE.MathUtils.clamp((performance.now()-this.transition.start)/800,0,1),t=p*p*(3-2*p);this.camera.position.lerpVectors(this.transition.from,this.transition.to,t);this.controls.target.lerpVectors(this.transition.fromTarget,this.transition.target,t);if(p===1)this.transition=null;this.dirty=true;}if(this.controls.enabled)this.controls.update();}
+  captureView(){return {position:this.camera.position.clone(),target:this.controls.target.clone(),fov:this.camera.fov,near:this.camera.near};}
+  moveView(position,target,fov=45,smooth=true){
+    if(this.walking)return;const distance=position.distanceTo(target);this.controls.minDistance=Math.min(this.span*.08,distance);this.controls.maxDistance=Math.max(this.span*5,distance);
+    const damping=this.controls.enableDamping;this.controls.enableDamping=false;this.controls.update();this.controls.enableDamping=damping;
+    if(smooth&&!matchMedia('(prefers-reduced-motion:reduce)').matches)this.transition={start:performance.now(),from:this.camera.position.clone(),to:position.clone(),fromTarget:this.controls.target.clone(),target:target.clone(),fromFov:this.camera.fov,fov};
+    else{this.transition=null;this.camera.position.copy(position);this.controls.target.copy(target);this.camera.fov=fov;this.camera.updateProjectionMatrix();this.controls.update();}this.dirty=true;
+  }
+  restoreView(view,smooth=true){this.camera.near=view.near;this.moveView(view.position,view.target,view.fov,smooth);}
+  focusPoint(point,initialView=null,smooth=true){
+    const target=new THREE.Vector3(...(initialView?.target||point)),offset=initialView?new THREE.Vector3(...initialView.cameraOffset):new THREE.Vector3(.36,1,.5).normalize().multiplyScalar(Math.max(this.span*.25,this.baseEyeHeight*15)*(this.camera.aspect<1?1.35:1));
+    this.moveView(target.clone().add(offset),target,initialView?.fov||45,smooth);
+  }
+  lookToward(point){if(this.walking)return;const target=new THREE.Vector3(...point),direction=target.sub(this.camera.position);if(direction.lengthSq()<1e-8)return;const radius=this.camera.position.distanceTo(this.controls.target);this.moveView(this.camera.position,this.camera.position.clone().add(direction.setLength(radius)),this.camera.fov);}
+  zoom(factor){if(this.walking)return;this.transition=null;const offset=this.camera.position.clone().sub(this.controls.target);const length=THREE.MathUtils.clamp(offset.length()*factor,this.controls.minDistance,this.controls.maxDistance);this.camera.position.copy(this.controls.target).add(offset.setLength(length));this.controls.update();this.dirty=true;}
+  update(){if(this.transition){const tr=this.transition,p=THREE.MathUtils.clamp((performance.now()-tr.start)/800,0,1),t=p*p*(3-2*p);this.camera.position.lerpVectors(tr.from,tr.to,t);this.controls.target.lerpVectors(tr.fromTarget,tr.target,t);if(tr.fov){this.camera.fov=THREE.MathUtils.lerp(tr.fromFov,tr.fov,t);this.camera.updateProjectionMatrix();}if(p===1)this.transition=null;this.dirty=true;}if(this.controls.enabled)this.controls.update();}
   floorAt(position,eye){
     // Follow walkable surfaces without teleporting onto roofs above the observer.
     const origin=new THREE.Vector3(position[0],position[1]+eye*.70,position[2]);this.raycaster.set(origin,new THREE.Vector3(0,-1,0));this.raycaster.far=eye*1.6;

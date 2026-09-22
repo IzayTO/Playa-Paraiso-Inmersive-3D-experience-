@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {clamp} from './math.js?v=1.3';
-import {Stars} from './stars.js?v=1.3';
+import {clamp} from './math.js?v=1.4';
+import {Stars} from './stars.js?v=1.4';
 
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
 // Art-directed clear-sky palettes, not predictions of local weather.

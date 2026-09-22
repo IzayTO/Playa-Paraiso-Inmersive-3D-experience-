@@ -1,181 +1,250 @@
-PARAÍSO · RESORT EXPLORER — VERSIÓN 1.3
-Paquete completo para GitHub Pages / servidor estático. Sin carpetas internas.
+PARAÍSO · RESORT EXPLORER — VERSIÓN 1.4
+Paquete completo para GitHub Pages o servidor estático. Sin carpetas internas.
 
-ACTUALIZAR DESDE EL TELÉFONO
+ACTUALIZAR DESDE TU TELÉFONO
 
-1. Descomprime el ZIP en la app Archivos.
-2. Abre la carpeta resultante: todos los archivos están al mismo nivel.
-3. En GitHub, ve a la LISTA PRINCIPAL de archivos de tu repositorio, donde
-   aparecen index.html y styles.css. Quédate en esa pantalla.
-4. Pulsa Add file > Upload files > Choose your files y selecciona TODOS los
-   archivos descomprimidos, incluido el nuevo index.html.
-5. Espera la carga y pulsa Commit changes.
+1. Descomprime el ZIP en Archivos.
+2. Abre la carpeta que apareció: verás todos los archivos juntos.
+3. En GitHub, vuelve a la LISTA PRINCIPAL del repositorio, donde está index.html.
+4. Usa Add file > Upload files > Choose your files.
+5. Selecciona TODOS los archivos del paquete, INCLUIDO index.html.
+6. Espera a que terminen de cargar y pulsa Commit changes.
 
-IMPORTANTE: index.html es un archivo, no una carpeta. No lo abras para pegar
-archivos dentro de su código. Todos los archivos van A SU LADO, en la raíz.
-Reemplaza también index.html: esta actualización añade controles nuevos.
+Son 39 archivos. Todos van AL LADO de index.html, al mismo nivel.
+index.html NO es una carpeta. No entres a su código para pegar otros archivos.
+Los archivos con el mismo nombre se reemplazan por los nuevos.
 
-Son 32 archivos. Conserva .nojekyll si ya está en GitHub; si no aparece en el
-selector del teléfono, no necesitas volver a subir ese archivo vacío.
-Las carpetas antiguas data, js y vendor pueden quedarse: esta versión no las
-utiliza. Si todavía conservas data/resort.json, puedes retirar ese archivo
-para eliminar la antigua copia de tu maqueta personal del repositorio.
+Las carpetas antiguas data, js y vendor pueden quedarse; esta versión utiliza
+los archivos de la raíz. Conserva .nojekyll si ya está en tu repositorio y tu
+teléfono no lo muestra. No hace falta borrar el repositorio ni configurar
+Pages de nuevo. El ZIP no incluye tu maqueta personal. Si deseas retirar su
+copia antigua, elimina específicamente data/resort.json, si todavía existe.
 
-El ZIP no incluye tu maqueta personal ni la carga automáticamente. demo.json
-es el ejemplo opcional. Abre el enlace habitual cuando GitHub Pages termine
-de publicar. Si aparece la versión anterior, prueba una pestaña privada.
-No necesitas compilar, instalar paquetes ni reconfigurar Pages.
-El visor debe abrirse mediante HTTP/HTTPS; Archivos de iOS no ejecuta la web.
+Abre tu enlace habitual cuando Pages termine de publicar. Si todavía aparece
+la versión anterior, recarga o prueba una pestaña privada. No hay que compilar
+ni instalar nada. Abre la aplicación por HTTP/HTTPS, no desde Archivos de iOS.
+
+QUÉ CAMBIÓ EN LAS RUTAS
+
+El visor lee la red principal y también las rutas de Part 8 cuando el archivo
+incluye ambas. Conserva sus nombres y prepara una red de navegación conjunta.
+
+- Un cruce real entre segmentos permite cambiar de una ruta a otra, aunque
+  hayas dibujado cada ruta por separado y sus nodos tengan otros nombres.
+- También se detectan uniones en T, extremos coincidentes y tramos solapados.
+- No se dibujan atajos entre caminos separados. Las líneas paralelas cercanas
+  siguen siendo caminos distintos si no se tocan.
+- Se compara la altura: un puente sobre otro camino no se convierte en un
+  giro. La tolerancia vertical es 0.05 unidades del archivo; la tolerancia
+  horizontal de coincidencia es 0.00001. Dibuja alturas distintas si dos
+  caminos se cruzan visualmente pero no deben comunicarse.
+- Las uniones automáticas solo se usan en el visor. Al guardar se conservan
+  las redes que dibujaste, sin insertar miles de nodos nuevos en tu archivo.
+- Rápida busca menor distancia; Estándar conserva la prioridad de los caminos;
+  Con sombra combina cobertura y estimación de sombra para la luz actual.
+- El modo libre utiliza estas mismas conexiones. En una bifurcación te deja
+  elegir; con una sola continuación sigue automáticamente. Puedes volver
+  hacia atrás y elegir otra rama. Se respeta oneWay si existe en el archivo.
+
+DESDE Y HACIA
+
+Si hay marcadores, las listas muestran sus nombres. Los marcadores ocultos no
+aparecen como destinos. Los nodos intermedios sirven para calcular el camino.
+
+Si NO hay marcadores, cada ruta ofrece solo dos extremos: Punto 1 y Punto 2.
+Una ruta con 17 nodos conserva los 17 en su recorrido, pero muestra únicamente
+esos dos extremos. Con varias rutas se añade su nombre para diferenciarlas.
+Un circuito o una red ramificada sin marcadores usa dos extremos separados;
+para elegir otros lugares concretos, agrega marcadores en Map Design.
+
+Un origen de edificio o elegido con «Desde aquí» aparece solo en Desde.
+Los lugares se vinculan al nodo de acceso indicado en el archivo o al nodo
+conectado más cercano. Si el marcador está separado de ese acceso, la tarjeta
+informa la distancia directa restante. No se atraviesan edificios para llegar
+al centro de una señal.
+
+HOTEL Y EDIFICIO AL COMENZAR
+
+Antes de preparar la escena eliges tu hotel y edificio, tanto en computadora
+como en teléfono:
+
+Lindo: 50–51, 52–55, Lobby.
+Maya: 60, 61–62, 63–64, 65–66, Lobby.
+
+Map Design v8 ya guarda los centradores dentro del MISMO JSON, en viewCenters.
+No necesitas subir un segundo archivo de ubicaciones.
+
+El visor usa el centrador correspondiente para la vista inicial aérea
+inclinada, con su posición, objetivo, desplazamiento de cámara y FOV exportado.
+El acceso indicado por ese centrador se convierte en el origen predeterminado.
+Puedes elegir otro origen en cualquier momento.
+
+Si falta el centrador, se busca un marcador que identifique ese edificio y
+hotel. Si tampoco existe, permanece la vista general: no se inventa dónde
+está el edificio. La maqueta de ejemplo conserva sus lugares ficticios.
+
+Pulsa el nombre del hotel/edificio en la cabecera para cambiar la selección.
+«Centrar vista» vuelve al encuadre inicial, sin cambiar el origen que después
+hayas elegido manualmente. El menú de vistas permite ver la maqueta completa.
+
+Identificadores de centradores reconocidos:
+lindo-50-51, lindo-52-55, lindo-lobby, maya-60, maya-61-62,
+maya-63-64, maya-65-66, maya-lobby.
+
+Ejemplo de un elemento en viewCenters:
+{
+  "id": "maya-65-66",
+  "hotel": "maya",
+  "area": "65-66",
+  "position": [12, 0, -8],
+  "nearestRouteNodeId": "acceso-65",
+  "initialView": {
+    "mode": "aerial-oblique",
+    "target": [12, 0, -8],
+    "cameraOffset": [14, 12, 16],
+    "fov": 45
+  }
+}
+Los números de este ejemplo son ilustrativos. Coloca las posiciones reales en
+Map Design. El FOV del centrador solo afecta la vista aérea.
+
+BUSCAR, MIRAR Y RECORRER
+
+«Lugares de la maqueta» contiene la búsqueda rápida. Escribe 65, spa, lobby,
+restaurante o parte de un nombre. No distingue mayúsculas ni acentos.
+
+- Seleccionar un lugar de la lista mueve suavemente la vista para encuadrarlo.
+- Tocar una señal del mapa abre su tarjeta sin mover la cámara.
+- «Llévame ahí» marca el destino y prepara la ruta. Si ya estás caminando,
+  calcula desde tu posición sobre el camino, conservando la mirada.
+- «Entrar cerca del lugar» inicia primera persona en el camino más cercano.
+  Si ese camino está separado del marcador, se informa su distancia directa.
+- El botón ↶ vuelve a la ubicación anterior: recupera el encuadre o el punto
+  del recorrido, su dirección de mirada y sus ajustes permitidos por el modo.
+  El historial guarda hasta 12 visitas durante la sesión.
+- El botón ➤, «Mirar hacia destino», orienta suavemente la cámara sin mover
+  tu posición. Arrastrar la mirada interrumpe esa orientación automática.
+
+«DESDE AQUÍ»
+
+Mantén pulsado un punto del plano, sin arrastrar, durante algo más de medio
+segundo. Aparece «Usar como origen». Al pulsarlo, el origen se coloca sobre el
+camino más cercano al punto señalado. Después toca un lugar y «Llévame ahí»,
+o elige Hacia y «Mostrar ruta». La ruta puede empezar entre dos nodos.
+
+La pulsación no se activa durante un arrastre, con dos dedos ni caminando.
+No abre la selección de texto de iOS. Los campos de búsqueda, edición y copia
+del enlace sí permiten el texto necesario para esas acciones.
+
+CAPAS Y ESTILO DEL CAMINO
+
+El botón ▱ abre las capas: Restaurantes, Piscinas, Habitaciones, Servicios,
+Rutas y Accesibilidad. Filtran las señales, la lista y el minimapa. Apagar Rutas
+oculta el dibujo, pero no elimina conexiones ni impide calcular recorridos.
+La señal del destino elegido sigue visible aunque apagues su categoría.
+
+Las categorías desconocidas se agrupan en Servicios. Accesibilidad corresponde
+a lugares etiquetados como accesibilidad o con accessible:true. Esa capa no
+certifica que una ruta sea accesible: depende de los datos que tú suministres.
+
+En Editor, «Camino por recorrer» ofrece:
+- Línea con flechas: el estilo animado habitual.
+- Huellas de dirección: breadcrumbs en forma de pequeñas flechas separadas.
+
+Las huellas aparecen únicamente en lo que falta recorrer. El tramo que ya
+recorriste mantiene la línea animada. Al retroceder se actualiza el límite;
+al salir de primera persona se conserva para verlo desde arriba. El ajuste
+se guarda en el JSON con «Guardar maqueta». Huésped utiliza el estilo elegido.
+
+COMPARTIR UNA VISTA
+
+El botón ↗ genera un enlace a un lugar (?place=...) o a una zona (?x=...&z=...).
+El enlace de una zona abre una vista aérea; no guarda toda la sesión de paseo.
+
+El ejemplo puede abrirse directamente porque demo.json viene en el paquete.
+Tu archivo local NO se sube a internet cuando copias un enlace.
+
+Para que otra persona también pueda cargar tu maqueta desde ese enlace:
+1. En «Compartir», pulsa «Descargar mapa.json para publicar» en modo Editor.
+2. Sube ese mapa.json al repositorio, al lado de index.html.
+3. Cuando Pages termine, comparte el enlace generado.
+
+Si mapa.json no está publicado, quien abre el enlace deberá cargar el MISMO
+JSON manualmente. Después se localizará la zona. Se comprueba que corresponda
+a la misma maqueta. Al publicar una nueva geometría/red, genera enlaces nuevos.
+La apertura habitual sin parámetros sigue comenzando sin una maqueta personal.
+Un archivo que subas a un repositorio público será descargable por sus visitas.
 
 HUÉSPED Y EDITOR
 
-El botón «Vista: Editor» / «Vista: Huésped» alterna entre ambos modos.
-La página abre en Editor. Añade ?modo=huesped al enlace para abrir Huésped.
-Este selector cambia la interfaz; no es un acceso con contraseña.
+«Vista: Editor» / «Vista: Huésped» alterna los modos. ?modo=huesped abre Huésped.
+Es un selector de interfaz, no un acceso con contraseña.
 
-HUÉSPED:
-- En primera persona: joystick, indicación compacta del recorrido y salida.
-- Dedo izquierdo: joystick, solo avanzar o retroceder por los caminos.
-- Dedo derecho: arrastrar la escena para mirar. El joystick nunca gira la
-  cámara, aunque lo desplaces en diagonal.
-- FOV fijo en 100° y velocidad fija en 1×. No hay ajustes de luz, altura,
-  velocidad, FOV ni minimapa en esta vista inmersiva simplificada.
-- Las opciones de dirección aparecen al llegar a un cruce en modo libre.
-- Puedes tocar un marcador para consultar el lugar o elegir un destino.
-- Conserva el cielo y la iluminación que hayas preparado en Editor.
+HUÉSPED EN PRIMERA PERSONA:
+- Joystick para avanzar/volver, indicación del recorrido y botón de salida.
+- Dedo izquierdo: joystick vertical. Un movimiento diagonal NO gira la cámara.
+- Dedo derecho: arrastra la escena para mirar en cualquier dirección.
+- FOV fijo en 100° y velocidad fija en 1×.
+- En las bifurcaciones del modo libre aparecen opciones de dirección.
+- Se conserva el cielo y la luz que hayas preparado en Editor.
 
 EDITOR:
-- Conserva los controles de vista general y luz/ambiente.
-- El botón de ajustes en primera persona permite FOV de 45° a 120°, altura,
-  velocidad de 0.5× a 4×, visibilidad y opacidad del minimapa.
-- El FOV empieza en 100° cada vez que entras en primera persona. La antigua
-  preferencia de 70° del navegador ya no se usa. Restablecer vuelve a 100°.
-- «Norte fijo» mantiene la orientación del minimapa; «Gira conmigo» lo orienta
-  según tu mirada. Ambos siguen tu posición. La opacidad va de 35% a 100%.
-- N corresponde a -Z y E a +X. X y Z se muestran debajo. Son los ejes del
-  archivo, no coordenadas GPS. El minimapa reutiliza un dibujo aéreo de la
-  geometría sin ejecutar un segundo render de sombras.
+- FOV de 45° a 120°, comenzando en 100° cada nueva entrada al recorrido.
+- Velocidad de 0.5× a 4×, altura de mirada y estilo del camino por recorrer.
+- Minimapa: «Norte fijo» o «Gira conmigo», opacidad de 35% a 100%.
+- N es -Z y E es +X. Las coordenadas X/Z son del archivo, no GPS.
+- En computadora: W/S o flechas para avanzar/volver, A/D para girar; también
+  puedes arrastrar. Soltar una barra devuelve el control al recorrido.
 
-En computadora: W/S o flechas para avanzar/volver, A/D o flechas laterales
-para girar; arrastrar también cambia la mirada. Las barras devuelven el
-control al recorrido al soltarlas. La selección de texto y la pulsación larga
-se bloquean en el visor; los campos del editor sí permiten editar texto.
+EDITAR LUGARES Y GUARDAR
 
-MARCADORES, TARJETAS Y «LLÉVAME AHÍ»
+Toca una señal y «Editar información y ubicación», o usa «+ Agregar lugar».
+Ajusta nombre, tipo, color, horario, descripción, posición y nodo de acceso.
+«Elegir ubicación sobre el plano» coloca la señal en Y=0; puedes ajustar Y.
+El acceso manual ofrece nodos originales de la sección que creó ese marcador.
+«Acceso más cercano» también permite usar las conexiones de la red preparada.
 
-Compatibilidad con el formato de Wizard Map Design / Resort Map Builder,
-versiones 1 a 7. Se importan nombre, categoría, color, posición, visibilidad,
-bloqueo y acceso a la red. Se conservan categorías desconocidas. También se
-reconstruyen las uniones geométricas pathConnections de la versión 7.
+Guarda el lugar y luego pulsa «Guardar maqueta»: descarga paraiso-maqueta.json.
+Los cambios son de esta sesión hasta que guardes el JSON. No hay base de datos.
+Se conserva la geometría y las redes originales, sus centradores y metadatos;
+se omite la imagen de referencia. Map Design sigue siendo la herramienta para
+construir edificios, rutas y uniones geométricas, gizmos y snaps.
 
-Las señales normales se orientan a la cámara, con relieve visual. No generan
-sombras. Un edificio opaco las oculta; un edificio transparente delante se
-mezcla sobre ellas. Los lugares ocultos no aparecen para el huésped, pero se
-pueden editar desde la lista en Editor.
+FUNCIONES CONSERVADAS
 
-Toca una señal o abre «Lugares de la maqueta». La tarjeta muestra nombre, tipo,
-distancia en línea recta y, si existen, horario y descripción. «Llévame ahí»
-marca el destino y prepara una ruta conectada. En vista general conserva tu
-encuadre; inicia con «Recorrer en primera persona».
+- Interfaz azul petróleo/turquesa, fondos claros, teléfono y computadora.
+- Inicio blanco sin cuadrícula, fotos ni maqueta personal incorporada.
+- Compatibilidad Map Design / Resort Map Builder v1–v8 y pathConnections.
+- Geometría, rotaciones XYZ, escala, reflejos, parámetros y opacidad.
+- Señales orientadas a la cámara, sin sombras; ocultación por edificios
+  opacos y mezcla con transparencias delante. Destino seleccionado con una
+  señal adicional visible incluso detrás de edificios.
+- Animación al dibujar la ruta sin cambiar tu encuadre.
+- Al salir de primera persona se recupera el encuadre de entrada.
+- Sol diagonal o por un lado, ida y vuelta de 5 a 60 minutos por trayecto.
+- Sombras continuas, reutilizadas al mover únicamente la cámara.
+- Amanecer y atardecer con paletas distintas, horizonte suave y estrellas
+  en el hemisferio superior que desaparecen al mediodía.
 
-Si ya estás caminando, la nueva ruta empieza en tu posición sobre el camino,
-sin saltarte al nodo más cercano ni cambiar tu mirada. Si no hay conexión,
-se informa y se conserva el recorrido anterior. No se inventan atajos.
-
-El DESTINO SELECCIONADO tiene una señal adicional siempre visible, incluso
-detrás de un edificio. Fuera de la vista aparece hacia el borde con una flecha.
-Su distancia es directa; el indicador del recorrido muestra la distancia
-pendiente por el camino. La ruta termina en el acceso, y la tarjeta de ruta
-informa si el marcador está separado de él. No se atraviesan edificios para
-llegar al centro del marcador.
-
-EDITAR INFORMACIÓN Y GUARDARLA
-
-1. Cambia a Editor.
-2. Toca un lugar y pulsa «Editar información y ubicación», o «+ Agregar lugar».
-3. Ajusta nombre, tipo, color, horario, descripción y coordenadas X/Y/Z.
-4. Desde la vista general puedes usar «Elegir ubicación sobre el plano».
-   Toca el suelo; se coloca en Y=0. Ajusta Y si lo necesitas.
-5. Asigna el nodo de acceso, o deja «Acceso más cercano».
-6. Guarda el lugar y pulsa «Guardar maqueta»: descarga paraiso-maqueta.json.
-
-Los cambios se mantienen durante la sesión. Para conservarlos al cerrar o
-compartirlos, guarda el JSON y cárgalo nuevamente. No se usa una base de datos.
-La geometría original y la información de rutas se conservan al exportar.
-La imagen de referencia del diseñador no se incluye.
-Al modificar lugares durante un recorrido se vuelve a la vista general y
-se limpia la ruta anterior para que puedas recalcular sus accesos.
-
-Este editor modifica información y ubicación de lugares. El diseñador de
-mapas sigue siendo la herramienta para edificios, gizmos, snaps y conexiones.
-Esas herramientas no aparecen en la vista huésped.
-
-EXPLORACIÓN LIBRE
-
-«Explorar todos los caminos» entra en primera persona sin destino obligatorio.
-En los ajustes de Editor, «Continuar en modo libre» cambia desde una ruta
-conservando tu posición. El joystick mantiene su función vertical.
-
-- Un solo camino permite avanzar y retroceder.
-- Si hay una sola continuación, se sigue automáticamente.
-- Ante varias continuaciones se detiene el movimiento y aparecen opciones.
-  Sus nombres siguen las rutas del archivo y su orientación cambia con tu
-  mirada. Elige el camino y vuelve a avanzar.
-- Retroceder recorre el historial de caminos. Puedes regresar a un cruce y
-  escoger otra rama. No hay desplazamiento fuera de la red.
-- Las redes desconectadas no se unen automáticamente: sal del recorrido,
-  cambia el origen y entra en otra.
-- Los cruces necesitan un nodo compartido. Líneas que se cruzan visualmente
-  u objetos path unidos no conectan por sí mismos la red de navegación.
-- Si el archivo declara oneWay, la exploración libre respeta ese sentido.
-
-FUNCIONES ANTERIORES CONSERVADAS
-
-- Interfaz azul petróleo, turquesa y tonos claros en móvil y computadora.
-- Maqueta blanca inicial, sin cuadrícula, fotografías ni maqueta personal.
-- Rotaciones XYZ, escala, reflejos, geometrías paramétricas y opacidad.
-- Rutas estándar, rápida y con sombra; dibujo animado sin mover la cámara.
-- Salir de primera persona recupera el encuadre general que elegiste.
-- Sol de esquina a esquina, por un lado o diagonal, que va y vuelve de 5 a
-  60 minutos por trayecto. Puedes pausarlo o desplazar su posición.
-- Sombras continuas para la posición actual de la luz, sin fundidos entre
-  imágenes. Se reutilizan cuando solo cambia la cámara.
-- Cielo con horizonte suave en 360°, amanecer y atardecer de tonos distintos.
-- Estrellas solo en el hemisferio superior: aparecen cerca de los extremos
-  del día y desaparecen al mediodía. Requieren Sol y sombras y Cielo azul.
-  El cielo opuesto al sol se oscurece suavemente.
-
-PRECISIÓN Y RENDIMIENTO
+ALCANCE Y VERIFICACIÓN
 
 Las distancias usan las unidades del archivo como metros. La altura de mirada
-se estima a partir de los edificios y se puede ajustar en Editor. Los tiempos
-de recorrido son orientativos, calculados para un paso humano habitual.
-La luz es una simulación visual, sin fecha, GPS ni cálculo astronómico real.
-Las sombras son proyecciones continuas, no ray tracing físico. Superficies
-duplicadas o transparencias superpuestas todavía pueden mostrar artefactos;
-no se modifica la geometría original para ocultarlos.
+se estima desde los edificios. La iluminación es una simulación visual sin
+fecha ni GPS; no es ray tracing físico. Transparencias o superficies duplicadas
+pueden conservar artefactos. No se deforma la geometría para esconderlos.
+Vuelve a calcular una ruta con sombra si cambias la posición del sol.
 
-El recorrido con sombra combina zonas cubiertas y una estimación de luz sobre
-los segmentos. Si cambias el sol, vuelve a mostrar la ruta para recalcularla.
-No se calculan sombras en el minimapa ni en los marcadores.
+34 pruebas automáticas: controles, formatos, exportación, cruces y solapamientos,
+17 nodos con dos extremos, conexiones entre redes, puentes, sentido único,
+centradores, historial de paseo, búsqueda, capas, enlaces, pulsación larga,
+FOV, estrellas, continuidad de luz y conservación de cámara.
+El shader del nuevo camino se compiló y comprobó en OpenGL/Mesa: las huellas
+solo sustituyen el tramo pendiente, y el tramo recorrido conserva su dibujo.
+También se validaron sintaxis, referencias, controles y contenido del ZIP.
+Estas comprobaciones no equivalen a una prueba completa en Safari o en un
+ iPhone físico. Revisa los gestos y la fluidez en tu dispositivo.
 
-VERIFICACIÓN
-
-21 pruebas automáticas de controles, formatos, edición, exportación, FOV,
-velocidad, rutas desde un punto intermedio, bifurcaciones, regreso, orientación
-del minimapa, preservación de cámara, estrellas y continuidad solar.
-El shader real de los marcadores se compiló en OpenGL/Mesa y se comprobó la
-ocultación opaca y la composición delante/detrás de transparencias.
-Se revisaron los dibujos del minimapa, los módulos, las referencias locales,
-los controles HTML y el contenido del ZIP.
-
-No equivale a una prueba completa en Safari o en un iPhone físico. La fluidez
-y los gestos del sistema necesitan revisión en tu dispositivo.
-
-ARCHIVOS Y LICENCIAS
-
-Todos los archivos van en la raíz. No hay dependencias de CDN ni fuentes
-remotas. Three.js r160.1 y OrbitControls incluyen THREE-LICENSE.txt (MIT).
-Outfit incluye OUTFIT-LICENSE.txt. props.js y la adaptación path-connections.js
-corresponden a las geometrías del creador Wizard Map Design del usuario.
-Proyecto independiente inspirado visualmente en Iberostar, sin afiliación.
+Todos los recursos están incluidos: no hay dependencias de CDN. Three.js
+r160.1 y OrbitControls: THREE-LICENSE.txt (MIT). Outfit: OUTFIT-LICENSE.txt.
+props.js y path-connections.js corresponden a las geometrías del diseñador.
+Prototipo independiente inspirado visualmente en Iberostar, sin afiliación.

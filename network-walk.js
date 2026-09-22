@@ -1,5 +1,5 @@
-import {distance,clamp} from './math.js?v=1.3';
-import {findRoute} from './routing.js?v=1.3';
+import {distance,clamp} from './math.js?v=1.4';
+import {findRoute} from './routing.js?v=1.4';
 
 const EPS=1e-7;
 export function nearestNetworkPoint(network,position){
@@ -34,7 +34,7 @@ export function routeFromLocation(network,location,to,mode='standard',scores=new
 }
 
 // A trail records connected edges. Reverse movement retraces it; a fork waits
-// for an explicit choice. Crossing lines without a shared node never connect.
+// for an explicit choice. The prepared network already includes real crossings.
 export class NetworkWalker {
   constructor(network,start,heading=0){
     this.network=network;this.nodes=new Map(network.nodes.map(n=>[n.id,n]));this.edges=new Map();this.adj=new Map(network.nodes.map(n=>[n.id,[]]));
@@ -52,7 +52,7 @@ export class NetworkWalker {
   get segment(){return this.trail[this.index];}
   get point(){const s=this.segment,a=this.nodes.get(s.from).position,b=this.nodes.get(s.to).position,t=this.offset/s.length;return a.map((v,i)=>v+(b[i]-v)*t);}
   get location(){const s=this.segment;return {edgeId:s.edge.id,t:s.from===s.edge.a?this.offset/s.length:1-this.offset/s.length,position:this.point};}
-  options(sign=1){const s=this.segment,node=sign>0?s.to:s.from;return (this.adj.get(node)||[]).filter(link=>link.edge.id!==s.edge.id&&(sign>0||!link.edge.oneWay));}
+  options(sign=1){const s=this.segment,node=sign>0?s.to:s.from,back=sign>0?s.from:s.to,unique=new Map();for(const link of this.adj.get(node)||[]){if(link.to===back||link.edge.id===s.edge.id||(sign<0&&link.edge.oneWay))continue;const old=unique.get(link.to);if(!old||link.edge.routeId===s.edge.routeId)unique.set(link.to,link);}return [...unique.values()];}
   get choices(){return this.pending?.options||[];}
   get atEnd(){return this.offset>=this.segment.length-EPS&&!this.options(1).length;}
   choose(edgeId){
